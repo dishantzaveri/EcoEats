@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/mapview.dart';
+import 'package:location/location.dart' as loc;
 
 import '../../utils/palette.dart';
+import 'CustomMapStyleExample.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -15,6 +19,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   // final HereMapController _hereMapController;
   // final MapCamera _mapCamera;
+  CustomMapStyleExample? _customMapStyleExample;
 
   @override
   Widget build(BuildContext context) {
@@ -40,20 +45,31 @@ class _MapScreenState extends State<MapScreen> {
           FloatingActionButton.small(
             heroTag: null,
             child: const Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: () {
+              _customMapStyleExample?.loadCustomMapStyle();
+            },
           ),
           FloatingActionButton.small(
             heroTag: null,
             child: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              _customMapStyleExample?.loadCustomMapStyle();
+            },
           ),
         ],
       ),
     );
   }
 
-  void _onMapCreated(HereMapController hereMapController) {
-    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalDay, (MapError? error) {
+  Future<void> _onMapCreated(HereMapController hereMapController) async {
+    loc.Location location = loc.Location();
+    loc.LocationData locationData = await location.getLocation();
+
+    final double latitude = locationData.latitude!;
+    final double longitude = locationData.longitude!;
+
+    File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
+    hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
       if (error != null) {
         print('Map scene not loaded. MapError: ${error.toString()}');
         return;
@@ -61,7 +77,7 @@ class _MapScreenState extends State<MapScreen> {
 
       const double distanceToEarthInMeters = 50000;
       MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(19.0760, 72.8777), mapMeasureZoom);
+      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
 
       hereMapController.pinWidget(_createWidget("Centered ViewPin", Color.fromARGB(150, 0, 194, 138)), GeoCoordinates(19.0760, 72.8777));
     });

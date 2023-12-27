@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Here Hackathon</string>
+	<string>Eco Eats</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Added by Developer -->
+	<!-- NSLocationWhenInUseUsageDescription -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your location when the app is in the foreground.</string>
+	<!-- NSLocationAlwaysAndWhenInUseUsageDescription -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your location when the app is in the foreground and background.</string>
+	<!-- UIBackgroundModes -->
+	<key>UIBackgroundModes</key>
+	<string>fetch</string>
 </dict>
 </plist>
