@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:here_hackathon/features/map/map_screen.dart';
 
 import '../../utils/palette.dart';
 import '../bytes/byte_screen.dart';
-import '../dashboard/dashboard_screen.dart';
 import '../feed/feed_screen.dart';
 import '../micro_learning/micro_learning_screen.dart';
 import '../network/network_screen.dart';
@@ -38,7 +38,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
           NetworkScreen(),
           ByteScreen(),
           MicroLearningScreen(),
-          DashboardScreen(),
+          MapScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
