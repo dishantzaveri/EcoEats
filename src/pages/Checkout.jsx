@@ -94,7 +94,7 @@ const Checkout = () => {
                   />
                 </div>
                 <button className="addTOCart__btn">
-                  <Link to="/loc">Payment</Link>
+                  <Link to="/location">Payment</Link>
                 </button>
               </form>
             </Col>
