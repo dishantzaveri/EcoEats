@@ -35,7 +35,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           FeedScreen(),
-          NetworkScreen(),
+          FoodScreen(),
           ByteScreen(),
           MicroLearningScreen(),
           MapScreen(),
@@ -43,8 +43,8 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+        // showSelectedLabels: false,
+        // showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 12,
         unselectedFontSize: 12,
@@ -75,7 +75,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
                       ? Palette.grey
                       : Palette.black,
             ),
-            label: 'Network',
+            label: 'Food',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
@@ -86,7 +86,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
                       ? Palette.grey
                       : Palette.black,
             ),
-            label: 'Bytes',
+            label: 'Instamart',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
@@ -97,7 +97,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
                       ? Palette.grey
                       : Palette.black,
             ),
-            label: 'Micro-Learning',
+            label: 'Dineout',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
@@ -108,7 +108,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
                       ? Palette.grey
                       : Palette.black,
             ),
-            label: 'Dashboard',
+            label: 'Genie',
           ),
         ],
       ),
