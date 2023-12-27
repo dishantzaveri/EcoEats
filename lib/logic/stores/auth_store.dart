@@ -98,4 +98,22 @@ class AuthStore extends ChangeNotifier {
     }
     return isAuthenticated;
   }
+
+  // Sign up with email and password
+  Future<bool> signUpWithEmailAndPassword({required String email, required String password}) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      isAuthenticated = true;
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        logger.d('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        logger.d('The account already exists for that email.');
+      }
+    } catch (e) {
+      logger.d(e);
+    }
+    return isAuthenticated;
+  }
 }

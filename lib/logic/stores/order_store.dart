@@ -11,6 +11,7 @@ import 'package:here_hackathon/logic/models/order_model.dart';
 import 'package:here_hackathon/logic/models/shop_model.dart';
 
 import '../../utils/const.dart';
+import '../models/user_model.dart';
 
 class OrderStore extends ChangeNotifier {
   OrderStore._();
@@ -117,5 +118,25 @@ class OrderStore extends ChangeNotifier {
       accessories.addEntries([MapEntry(x.id, accessory)]);
     }
     logger.d('accessories: $accessories');
+  }
+
+  Map<String, UserModel> users = {};
+
+  Future<void> fetchUserData() async {
+    // Get the specific document from the Firestore collection.
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('user').get().then((value) => value.docs);
+
+    // Check if the document exists and return its data.
+    for (var x in docSnapshot) {
+      // logger.d('Document data: ${x.data()}');
+
+      final Map<String, dynamic> data = x.data() as Map<String, dynamic>;
+      // logger.d('Document data: ${data['name']}');
+      UserModel user = UserModel.fromJson(data);
+      user = user.copyWith(id: x.id);
+
+      users.addEntries([MapEntry(x.id, user)]);
+    }
+    logger.d('users: $users');
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class ShopModel {
-  String id;
+  String? id;
   String name;
   String description;
   String imageUrl;
@@ -14,10 +14,10 @@ class ShopModel {
   double addressLatitude;
   double addressLongitude;
   String status;
-  double rating;
+  String rating;
 
   ShopModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -39,12 +39,13 @@ class ShopModel {
       name: json['name'],
       description: json['description'],
       imageUrl: json['imageUrl'],
-      accessories: json['accessories'],
+      // Iterate over the list of accessories and convert each item to a String.
+      accessories: List<String>.from(json['accessories']),
       address: json['address'],
       city: json['city'],
       state: json['state'],
       country: json['country'],
-      zipCode: json['zipCode'],
+      zipCode: json['zipCode'].toString(),
       addressLatitude: json['addressLatitude'],
       addressLongitude: json['addressLongitude'],
       status: json['status'],
@@ -111,7 +112,7 @@ class ShopModel {
     double? addressLatitude,
     double? addressLongitude,
     String? status,
-    double? rating,
+    String? rating,
   }) {
     return ShopModel(
       id: id ?? this.id,
