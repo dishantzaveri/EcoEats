@@ -1,5 +1,5 @@
 class OrderModel {
-  String id;
+  String? id;
   String name;
   String description;
   String imageUrl;
@@ -18,7 +18,7 @@ class OrderModel {
   String destinationPhoneNumber;
 
   OrderModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -43,19 +43,19 @@ class OrderModel {
       name: json['name'],
       description: json['description'],
       imageUrl: json['imageUrl'],
-      price: json['price'],
-      quantity: json['quantity'],
+      quantity: json['quantity'].toString(),
       status: json['status'],
       sourceLatitude: json['sourceLatitude'],
       sourceLongitude: json['sourceLongitude'],
+      price: json['price'].toString(),
       destinationLatitude: json['destinationLatitude'],
       destinationLongitude: json['destinationLongitude'],
       sourceAddress: json['sourceAddress'],
       destinationAddress: json['destinationAddress'],
       sourceName: json['sourceName'],
       destinationName: json['destinationName'],
-      sourcePhoneNumber: json['sourcePhoneNumber'],
-      destinationPhoneNumber: json['destinationPhoneNumber'],
+      sourcePhoneNumber: json['sourcePhoneNumber'].toString(),
+      destinationPhoneNumber: json['destinationPhoneNumber'].toString(),
     );
   }
 
