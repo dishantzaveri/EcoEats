@@ -1,8 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:here_hackathon/utils/const.dart';
 import 'package:here_sdk/core.dart';
+import 'package:here_sdk/core.errors.dart';
+import 'package:here_sdk/location.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:location/location.dart' as loc;
 
@@ -18,9 +22,11 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  // final HereMapController _hereMapController;
+  late final HereMapController _hereMapController;
   // final MapCamera _mapCamera;
   CustomMapStyleExample? _customMapStyleExample;
+  late LocationEngine _locationEngine;
+  late LocationIndicator _locationIndicator;
   RoutingExample? _routingExample;
 
   @override
@@ -48,14 +54,14 @@ class _MapScreenState extends State<MapScreen> {
             heroTag: null,
             child: const Icon(Icons.edit),
             onPressed: () {
-              _customMapStyleExample?.loadCustomMapStyle();
+              addMarker(_hereMapController, 19.0760 + Random().nextDouble() * 0.1 - 0.005, 72.8777 + Random().nextDouble() * 0.1 - 0.005, "assets/images/ecoeats.png");
             },
           ),
           FloatingActionButton.small(
             heroTag: null,
             child: const Icon(Icons.search),
             onPressed: () {
-              _customMapStyleExample?.loadCustomMapStyle();
+              myLoc(19.0760, 72.8777);
             },
           ),
           FloatingActionButton.small(
@@ -71,14 +77,21 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _onMapCreated(HereMapController hereMapController) async {
+    try {
+      _locationEngine = LocationEngine();
+    } on InstantiationException {
+      throw ("Initialization of LocationEngine failed.");
+    }
+    _hereMapController = hereMapController;
+    _locationIndicator = LocationIndicator();
     loc.Location location = loc.Location();
     loc.LocationData locationData = await location.getLocation();
 
     final double latitude = locationData.latitude!;
     final double longitude = locationData.longitude!;
 
-    File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
-    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.liteNight, (MapError? error) {
+    //File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
+    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalDay, (MapError? error) {
       // hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
       if (error != null) {
         print('Map scene not loaded. MapError: ${error.toString()}');
@@ -88,10 +101,46 @@ class _MapScreenState extends State<MapScreen> {
       const double distanceToEarthInMeters = 20000;
       MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
       hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
-
-      // hereMapController.pinWidget(_createWidget("Centered ViewPin", Color.fromARGB(150, 0, 194, 138)), GeoCoordinates(19.0760, 72.8777));
     });
   }
+
+  void myLoc(double lati, double longi) {
+    Location? myLocation = _locationEngine.lastKnownLocation;
+
+    if (myLocation == null) {
+      // No last known location, use default instead.
+      myLocation = Location.withCoordinates(GeoCoordinates(lati, longi));
+      myLocation.time = DateTime.now();
+    }
+
+    // Set-up location indicator.
+    // Enable a halo to indicate the horizontal accuracy.
+    _locationIndicator!.isAccuracyVisualized = true;
+    _locationIndicator!.locationIndicatorStyle = LocationIndicatorIndicatorStyle.pedestrian;
+    _locationIndicator!.updateLocation(myLocation);
+    _locationIndicator!.enable(_hereMapController!);
+
+    // MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, 2000);
+    // _hereMapController!.camera.lookAtPointWithMeasure(
+    //   myLocation.coordinates,
+    //   mapMeasureZoom,
+    // );
+
+    // Update state's location.
+    setState(() {
+      //_location = myLocation;
+    });
+  }
+
+  void addMarker(HereMapController hereMapController, double lati, double longi, String logo) {
+    logger.d("Add markers");
+    int imageWidth = 300;
+    int imageHeight = 300;
+    MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
+    MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
+    hereMapController.mapScene.addMapMarker(mapMarker);
+  }
+
 
   Widget _createWidget(String label, Color backgroundColor) {
     return Container(

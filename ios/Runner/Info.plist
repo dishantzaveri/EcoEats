@@ -53,5 +53,17 @@
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open and in the background.</string>
+
+	<key>UIRequiredDeviceCapabilities</key>
+    <array>
+       <string>location-services</string>
+       <string>gps</string>
+    </array>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+       <string>This app needs to access your current location to display it on the map.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+       <string>This app needs to access your current location to display it on the map.</string>
+    <key>NSMotionUsageDescription</key>
+       <string>Motion detection is needed to determine more accurate locations, when no GPS signal is found or used.</string>
 </dict>
 </plist>
