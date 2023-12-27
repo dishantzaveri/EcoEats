@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:here_hackathon/logic/stores/location_store.dart';
 import 'package:provider/provider.dart';
 
 import '../../logic/stores/auth_store.dart';
@@ -24,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Future<void> initApis() async {
     logger.d("initApis");
+    context.read<LocationStore>().initLocation();
     if (!context.read<AuthStore>().isAuthenticated) {
       // await context.read<AuthStore>().testToken();
     }

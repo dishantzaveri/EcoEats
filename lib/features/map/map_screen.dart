@@ -8,6 +8,7 @@ import 'package:location/location.dart' as loc;
 
 import '../../utils/palette.dart';
 import 'CustomMapStyleExample.dart';
+import 'RoutingExample.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -20,6 +21,7 @@ class _MapScreenState extends State<MapScreen> {
   // final HereMapController _hereMapController;
   // final MapCamera _mapCamera;
   CustomMapStyleExample? _customMapStyleExample;
+  RoutingExample? _routingExample;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,13 @@ class _MapScreenState extends State<MapScreen> {
               _customMapStyleExample?.loadCustomMapStyle();
             },
           ),
+          FloatingActionButton.small(
+            heroTag: null,
+            child: const Icon(Icons.route),
+            onPressed: () {
+              _routingExample?.addRoute();
+            },
+          ),
         ],
       ),
     );
@@ -80,7 +89,7 @@ class _MapScreenState extends State<MapScreen> {
       MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
       hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
 
-      hereMapController.pinWidget(_createWidget("Centered ViewPin", Color.fromARGB(150, 0, 194, 138)), GeoCoordinates(19.0760, 72.8777));
+      // hereMapController.pinWidget(_createWidget("Centered ViewPin", Color.fromARGB(150, 0, 194, 138)), GeoCoordinates(19.0760, 72.8777));
     });
   }
 

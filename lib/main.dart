@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:here_hackathon/logic/stores/location_store.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.engine.dart';
 import 'package:here_sdk/core.errors.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'logic/stores/auth_store.dart';
+import 'logic/stores/order_store.dart';
 import 'utils/const.dart';
 import 'utils/dark_theme.dart';
 import 'utils/env/env.dart';
@@ -82,6 +84,8 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthStore()),
+        ChangeNotifierProvider(create: (_) => OrderStore()),
+        ChangeNotifierProvider(create: (_) => LocationStore()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
