@@ -39,7 +39,7 @@ class OrderStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<OrderModel> orders = [];
+  Map<String, OrderModel> orders = {};
 
   Future<void> fetchOrderData() async {
     // Get the specific document from the Firestore collection.
@@ -54,12 +54,12 @@ class OrderStore extends ChangeNotifier {
       OrderModel order = OrderModel.fromJson(data);
       order = order.copyWith(id: x.id);
 
-      orders.add(order);
+      orders.addEntries([MapEntry(x.id, order)]);
     }
     logger.d('orders: $orders');
   }
 
-  List<ShopModel> shops = [];
+  Map<String, ShopModel> shops = {};
 
   Future<void> fetchShopData() async {
     // Get the specific document from the Firestore collection.
@@ -74,12 +74,12 @@ class OrderStore extends ChangeNotifier {
       ShopModel shop = ShopModel.fromJson(data);
       shop = shop.copyWith(id: x.id);
 
-      shops.add(shop);
+      shops.addEntries([MapEntry(x.id, shop)]);
     }
     logger.d('shops: $shops');
   }
 
-  List<RiderModel> riders = [];
+  Map<String, RiderModel> riders = {};
 
   Future<void> fetchRiderData() async {
     // Get the specific document from the Firestore collection.
@@ -94,12 +94,12 @@ class OrderStore extends ChangeNotifier {
       RiderModel rider = RiderModel.fromJson(data);
       rider = rider.copyWith(id: x.id);
 
-      riders.add(rider);
+      riders.addEntries([MapEntry(x.id, rider)]);
     }
     logger.d('riders: $riders');
   }
 
-  List<AccessoryModel> accessories = [];
+  Map<String, AccessoryModel> accessories = {};
 
   Future<void> fetchAccessoryData() async {
     // Get the specific document from the Firestore collection.
@@ -114,7 +114,7 @@ class OrderStore extends ChangeNotifier {
       AccessoryModel accessory = AccessoryModel.fromJson(data);
       accessory = accessory.copyWith(id: x.id);
 
-      accessories.add(accessory);
+      accessories.addEntries([MapEntry(x.id, accessory)]);
     }
     logger.d('accessories: $accessories');
   }
