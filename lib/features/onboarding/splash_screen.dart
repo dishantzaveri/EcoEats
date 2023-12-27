@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image(
-                image: const AssetImage('assets/images/logo.png'),
+                image: const AssetImage('assets/images/ecoeats.png'),
                 width: MediaQuery.of(context).size.width,
               ),
             ],

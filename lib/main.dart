@@ -25,7 +25,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // initLocation();
+  initLocation();
 
   runApp(MainApp());
 }
