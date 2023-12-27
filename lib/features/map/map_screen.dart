@@ -8,6 +8,7 @@ import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/location.dart';
 import 'package:here_sdk/mapview.dart';
+import 'package:here_sdk/navigation.dart' as nav;
 import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
@@ -35,6 +36,8 @@ class _MapScreenState extends State<MapScreen> {
   late double latit, longit;
   late double mylongit, mylatit;
   List<MapPolyline> _mapPolylines = [];
+  nav.VisualNavigator? _visualNavigator;
+  nav.LocationSimulator? _locationSimulator;
 
   @override
   void initState() {
@@ -49,6 +52,7 @@ class _MapScreenState extends State<MapScreen> {
     } on InstantiationException {
       throw ("Initialization of RoutingEngine failed.");
     }
+    //myLoc();
   }
 
   @override
@@ -99,6 +103,45 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
     );
+  }
+
+  _startGuidance(rout.Route route) {
+    try {
+      // Without a route set, this starts tracking mode.
+      _visualNavigator = nav.VisualNavigator();
+    } on InstantiationException {
+      throw Exception("Initialization of VisualNavigator failed.");
+    }
+
+    // This enables a navigation view including a rendered navigation arrow.
+    _visualNavigator!.startRendering(_hereMapController!);
+
+    // Hook in one of the many listeners. Here we set up a listener to get instructions on the maneuvers to take while driving.
+    // For more details, please check the "navigation_app" example and the Developer's Guide.
+    _visualNavigator!.maneuverNotificationListener =
+        nav.ManeuverNotificationListener((String maneuverText) {
+      print("ManeuverNotifications: $maneuverText");
+    });
+
+    // Set a route to follow. This leaves tracking mode.
+    _visualNavigator!.route = route;
+
+    // VisualNavigator acts as LocationListener to receive location updates directly from a location provider.
+    // Any progress along the route is a result of getting a new location fed into the VisualNavigator.
+    _setupLocationSource(_visualNavigator!, route);
+  }
+
+  _setupLocationSource(LocationListener locationListener, rout.Route route) {
+    try {
+      // Provides fake GPS signals based on the route geometry.
+      _locationSimulator = nav.LocationSimulator.withRoute(
+          route, nav.LocationSimulatorOptions());
+    } on InstantiationException {
+      throw Exception("Initialization of LocationSimulator failed.");
+    }
+
+    _locationSimulator!.listener = locationListener;
+    _locationSimulator!.start();
   }
 
   double _getRandom(double min, double max) {
@@ -192,12 +235,12 @@ class _MapScreenState extends State<MapScreen> {
     _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
         (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
       if (routingError == null) {
-        // When error is null, it is guaranteed that the list is not empty.
         rout.Route route = routeList!.first;
         _animateToRoute(route);
         _showRouteDetails(route);
         _showRouteOnMap(route);
         _logRouteViolations(route);
+        _startGuidance(route);
       } else {
         var error = routingError.toString();
         _showDialog('Error', 'Error while calculating a route: $error');
@@ -373,11 +416,12 @@ class _MapScreenState extends State<MapScreen> {
           MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
       hereMapController.camera.lookAtPointWithMeasure(
           GeoCoordinates(latitude, longitude), mapMeasureZoom);
-      hereMapController.mapScene.enableFeatures(
-          {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      // hereMapController.mapScene.enableFeatures(
+      //     {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
       hereMapController.mapScene.enableFeatures(
           {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
+    myLoc();
   }
 
   void myLoc() {
