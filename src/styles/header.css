@@ -8,9 +8,11 @@
   text-align: center;
 }
 .logo img {
-  width: calc(100% - 60%);
+  width: calc(100% - 30%);
   object-fit: contain;
-  margin-top: -40px;
+  margin-top: -20px;
+  margin-left: -170px;
+  margin-right: -100px;
 }
 
 .logo h5 {
