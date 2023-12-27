@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class UserModel {
-  String id;
+  String? id;
   String name;
   String phone;
   String email;
@@ -17,7 +17,7 @@ class UserModel {
   List<String>? orders;
 
   UserModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.phone,
     required this.email,
@@ -37,18 +37,18 @@ class UserModel {
     return UserModel(
       id: json['id'],
       name: json['name'],
-      phone: json['phone'],
+      phone: json['phone'].toString(),
       email: json['email'],
       address: json['address'],
       city: json['city'],
       state: json['state'],
       country: json['country'],
-      zipCode: json['zipCode'],
+      zipCode: json['zipCode'].toString(),
       addressLatitude: json['addressLatitude'],
       addressLongitude: json['addressLongitude'],
-      status: json['status'],
       imageUrl: json['imageUrl'],
-      orders: json['orders'],
+      orders: List<String>.from(json['orders']),
+      status: json['status'],
     );
   }
 

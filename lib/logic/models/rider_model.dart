@@ -1,5 +1,5 @@
 class RiderModel {
-  String id;
+  String? id;
   String name;
   String phone;
   String email;
@@ -19,7 +19,7 @@ class RiderModel {
   double currentLongitude;
 
   RiderModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.phone,
     required this.email,
@@ -43,7 +43,7 @@ class RiderModel {
     return RiderModel(
       id: json['id'],
       name: json['name'],
-      phone: json['phone'],
+      phone: json['phone'].toString(),
       email: json['email'],
       address: json['address'],
       city: json['city'],

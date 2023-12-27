@@ -1,5 +1,5 @@
 class AccessoryModel {
-  String id;
+  String? id;
   String name;
   String description;
   String imageUrl;
@@ -10,7 +10,7 @@ class AccessoryModel {
   double sourceLongitude;
 
   AccessoryModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.description,
     required this.imageUrl,

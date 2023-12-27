@@ -6,8 +6,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:here_hackathon/logic/models/accessory_model.dart';
-import 'package:here_hackathon/logic/models/delivery_man_model.dart';
 import 'package:here_hackathon/logic/models/order_model.dart';
+import 'package:here_hackathon/logic/models/rider_model.dart';
 import 'package:here_hackathon/logic/models/shop_model.dart';
 
 import '../../utils/const.dart';
@@ -36,6 +36,7 @@ class OrderStore extends ChangeNotifier {
     fetchShopData();
     fetchRiderData();
     fetchAccessoryData();
+    fetchUserData();
 
     notifyListeners();
   }
@@ -104,7 +105,7 @@ class OrderStore extends ChangeNotifier {
 
   Future<void> fetchAccessoryData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('accessories').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('accessory').get().then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {

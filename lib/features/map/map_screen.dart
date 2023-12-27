@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:here_hackathon/utils/const.dart';
+import 'package:here_sdk/animation.dart' as anim;
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/location.dart';
@@ -11,12 +11,10 @@ import 'package:here_sdk/mapview.dart';
 import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
-import 'package:here_sdk/animation.dart' as anim;
 
 import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
 import 'CustomMapStyleExample.dart';
-import 'RoutingExample.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -114,11 +112,8 @@ class _MapScreenState extends State<MapScreen> {
     Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
 
     // Animate to the route within a duration of 3 seconds.
-    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route!.boundingBox,
-        GeoOrientationUpdate(bearing, tilt),
-        mapViewport);
-    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
-        update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
+    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route!.boundingBox, GeoOrientationUpdate(bearing, tilt), mapViewport);
+    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
     _hereMapController.camera.startAnimation(animation);
   }
 
@@ -144,7 +139,7 @@ class _MapScreenState extends State<MapScreen> {
     return GeoCoordinates(lat, lon);
   }
 
-  int i=0;
+  int i = 0;
   List options = [rout.CarOptions, rout.TruckOptions, rout.PedestrianOptions, rout.ScooterOptions, rout.BicycleOptions, rout.EVCarOptions, rout.TaxiOptions, rout.BusOptions, rout.TaxiOptions];
   Future<void> addRoute() async {
     logger.d("Calculating ${options[i]} route.");
@@ -162,21 +157,20 @@ class _MapScreenState extends State<MapScreen> {
 
     List<rout.Waypoint> waypoints = [startWaypoint, waypoint1, waypoint2, destinationWaypoint];
 
-    _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
-            (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
-          if (routingError == null) {
-            // When error is null, it is guaranteed that the list is not empty.
-            rout.Route route = routeList!.first;
-            _animateToRoute(route);
-            _showRouteDetails(route);
-            _showRouteOnMap(route);
-            _logRouteViolations(route);
-          } else {
-            var error = routingError.toString();
-            _showDialog('Error', 'Error while calculating a route: $error');
-            logger.d(error);
-          }
-        });
+    _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(), (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
+      if (routingError == null) {
+        // When error is null, it is guaranteed that the list is not empty.
+        rout.Route route = routeList!.first;
+        _animateToRoute(route);
+        _showRouteDetails(route);
+        _showRouteOnMap(route);
+        _logRouteViolations(route);
+      } else {
+        var error = routingError.toString();
+        _showDialog('Error', 'Error while calculating a route: $error');
+        logger.d(error);
+      }
+    });
     i++;
   }
 
@@ -223,11 +217,7 @@ class _MapScreenState extends State<MapScreen> {
     MapPolyline routeMapPolyline;
     try {
       routeMapPolyline = MapPolyline.withRepresentation(
-          routeGeoPolyline,
-          MapPolylineSolidRepresentation(
-              MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
-              polylineColor,
-              LineCap.round));
+          routeGeoPolyline, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), polylineColor, LineCap.round));
       _hereMapController.mapScene.addMapPolyline(routeMapPolyline);
       _mapPolylines.add(routeMapPolyline);
     } on MapPolylineRepresentationInstantiationException catch (e) {
@@ -271,11 +261,7 @@ class _MapScreenState extends State<MapScreen> {
         MapPolyline trafficSpanMapPolyline;
         try {
           trafficSpanMapPolyline = new MapPolyline.withRepresentation(
-              span.geometry,
-              MapPolylineSolidRepresentation(
-                  MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
-                  lineColor,
-                  LineCap.round));
+              span.geometry, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), lineColor, LineCap.round));
           _hereMapController.mapScene.addMapPolyline(trafficSpanMapPolyline);
           _mapPolylines.add(trafficSpanMapPolyline);
         } on MapPolylineRepresentationInstantiationException catch (e) {
@@ -295,12 +281,8 @@ class _MapScreenState extends State<MapScreen> {
     int estimatedTrafficDelayInSeconds = route.trafficDelay.inSeconds;
     int lengthInMeters = route.lengthInMeters;
 
-    String routeDetails = 'Travel Time: ' +
-        _formatTime(estimatedTravelTimeInSeconds) +
-        ', Traffic Delay: ' +
-        _formatTime(estimatedTrafficDelayInSeconds) +
-        ', Length: ' +
-        _formatLength(lengthInMeters);
+    String routeDetails =
+        'Travel Time: ' + _formatTime(estimatedTravelTimeInSeconds) + ', Traffic Delay: ' + _formatTime(estimatedTrafficDelayInSeconds) + ', Length: ' + _formatLength(lengthInMeters);
 
     _showDialog('Route Details', '$routeDetails');
     logger.d(routeDetails);
@@ -319,7 +301,6 @@ class _MapScreenState extends State<MapScreen> {
 
     return '$hours:$minutes min';
   }
-
 
   Future<void> _onMapCreated(HereMapController hereMapController) async {
     _hereMapController = hereMapController;
@@ -385,7 +366,6 @@ class _MapScreenState extends State<MapScreen> {
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
     hereMapController.mapScene.addMapMarker(mapMarker);
   }
-
 
   Widget _createWidget(String label, Color backgroundColor) {
     return Container(
