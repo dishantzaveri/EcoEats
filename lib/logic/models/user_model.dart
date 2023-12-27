@@ -1,0 +1,133 @@
+import 'package:flutter/foundation.dart';
+
+class UserModel {
+  String id;
+  String name;
+  String phone;
+  String email;
+  String address;
+  String city;
+  String state;
+  String country;
+  String zipCode;
+  double addressLatitude;
+  double addressLongitude;
+  String status;
+  String imageUrl;
+  List<String>? orders;
+
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.email,
+    required this.address,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.zipCode,
+    required this.addressLatitude,
+    required this.addressLongitude,
+    required this.status,
+    required this.imageUrl,
+    this.orders,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      email: json['email'],
+      address: json['address'],
+      city: json['city'],
+      state: json['state'],
+      country: json['country'],
+      zipCode: json['zipCode'],
+      addressLatitude: json['addressLatitude'],
+      addressLongitude: json['addressLongitude'],
+      status: json['status'],
+      imageUrl: json['imageUrl'],
+      orders: json['orders'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'address': address,
+      'city': city,
+      'state': state,
+      'country': country,
+      'zipCode': zipCode,
+      'addressLatitude': addressLatitude,
+      'addressLongitude': addressLongitude,
+      'status': status,
+      'imageUrl': imageUrl,
+      'orders': orders,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'UserModel(id: $id, name: $name, phone: $phone, email: $email, address: $address, city: $city, state: $state, country: $country, zipCode: $zipCode, addressLatitude: $addressLatitude, addressLongitude: $addressLongitude, status: $status, imageUrl: $imageUrl, orders: $orders)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UserModel &&
+        other.id == id &&
+        other.name == name &&
+        other.phone == phone &&
+        other.email == email &&
+        other.address == address &&
+        other.city == city &&
+        other.state == state &&
+        other.country == country &&
+        other.zipCode == zipCode &&
+        other.addressLatitude == addressLatitude &&
+        other.addressLongitude == addressLongitude &&
+        other.status == status &&
+        other.imageUrl == imageUrl &&
+        listEquals(other.orders, orders);
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? email,
+    String? address,
+    String? city,
+    String? state,
+    String? country,
+    String? zipCode,
+    double? addressLatitude,
+    double? addressLongitude,
+    String? status,
+    String? imageUrl,
+    List<String>? orders,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      country: country ?? this.country,
+      zipCode: zipCode ?? this.zipCode,
+      addressLatitude: addressLatitude ?? this.addressLatitude,
+      addressLongitude: addressLongitude ?? this.addressLongitude,
+      status: status ?? this.status,
+      imageUrl: imageUrl ?? this.imageUrl,
+      orders: orders ?? this.orders,
+    );
+  }
+}
