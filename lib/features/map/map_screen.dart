@@ -227,20 +227,57 @@ class _MapScreenState extends State<MapScreen> {
 
     List<rout.Waypoint> waypoints = [
       startWaypoint,
-      waypoint1,
-      waypoint2,
+      // waypoint1,
+      // waypoint2,
       destinationWaypoint
     ];
 
+    List<rout.Waypoint> selectedWaypoints = [startWaypoint];
+
     _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
-        (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
+        (rout.RoutingError? routingError,
+            List<rout.Route>? initialRouteList) async {
       if (routingError == null) {
-        rout.Route route = routeList!.first;
-        _animateToRoute(route);
-        _showRouteDetails(route);
-        _showRouteOnMap(route);
-        _logRouteViolations(route);
-        _startGuidance(route);
+        rout.Route initialRoute = initialRouteList!.first;
+        double initialDistance = initialRoute.lengthInMeters.toDouble();
+        for (var waypoint in waypoints) {
+          var candidateWaypoints = [
+            ...selectedWaypoints,
+            waypoint,
+            destinationWaypoint
+          ];
+          _routingEngine
+              .calculateCarRoute(candidateWaypoints, rout.CarOptions(),
+                  (rout.RoutingError? routingError,
+                      List<rout.Route>? routeList) async {
+            if (routingError == null) {
+              rout.Route candidateRoute = routeList!.first;
+              double candidateDistance =
+                  candidateRoute.lengthInMeters.toDouble();
+
+              // Check if adding the waypoint increases the route length by a certain threshold (e.g., 10%).
+              double threshold = 1.5;
+              if (candidateDistance < initialDistance * threshold) {
+                // Include the waypoint in the selected waypoints list.
+                selectedWaypoints.add(waypoint);
+
+                // Update the map and visualization as needed.
+                _animateToRoute(candidateRoute);
+                _showRouteDetails(candidateRoute);
+                _showRouteOnMap(candidateRoute);
+                _logRouteViolations(candidateRoute);
+                //_showDialog("Navigation", "Start Navigation")
+                //_startGuidance(candidateRoute);
+              }
+            }
+          });
+        }
+        // rout.Route route = routeList!.first;
+        // _animateToRoute(route);
+        // _showRouteDetails(route);
+        // _showRouteOnMap(route);
+        // _logRouteViolations(route);
+        // _startGuidance(route);
       } else {
         var error = routingError.toString();
         _showDialog('Error', 'Error while calculating a route: $error');

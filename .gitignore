@@ -45,7 +45,9 @@ app.*.map.json
 # here_sdk
 /plugins/here_sdk/
 /plugins/here_sdk_navigate/
+/plugins/here_sdk_old/
 
 # exclude all .env files from source control
 *.env
 /lib/utils/env/env.g.dart
+/lib/utils/env/
