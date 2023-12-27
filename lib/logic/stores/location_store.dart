@@ -44,7 +44,7 @@ class LocationStore extends ChangeNotifier {
 
     notifyListeners();
     // run refresh connection every 30 seconds
-    Timer.periodic(const Duration(seconds: 3), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
       refreshLocation();
     });
   }
@@ -52,6 +52,7 @@ class LocationStore extends ChangeNotifier {
   Future<void> refreshLocation() async {
     logger.d("refreshLocation");
     locationData = await locationObject.getLocation();
+    logger.d("${locationData!.latitude!} + ${locationData!.longitude!}");
     notifyListeners();
   }
 

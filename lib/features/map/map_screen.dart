@@ -9,7 +9,9 @@ import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/location.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:location/location.dart' as loc;
+import 'package:provider/provider.dart';
 
+import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
 import 'CustomMapStyleExample.dart';
 import 'RoutingExample.dart';
@@ -59,7 +61,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           FloatingActionButton.small(
             heroTag: null,
-            child: const Icon(Icons.search),
+            child: const Icon(Icons.location_pin),
             onPressed: () {
               myLoc(19.0760, 72.8777);
             },
@@ -105,11 +107,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void myLoc(double lati, double longi) {
+    final locationData = context.read<LocationStore>().locationData;
     Location? myLocation = _locationEngine.lastKnownLocation;
 
     if (myLocation == null) {
       // No last known location, use default instead.
-      myLocation = Location.withCoordinates(GeoCoordinates(lati, longi));
+      myLocation = Location.withCoordinates(GeoCoordinates(locationData!.latitude!, locationData.longitude!));
       myLocation.time = DateTime.now();
     }
 
