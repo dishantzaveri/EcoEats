@@ -78,7 +78,8 @@ class _MapScreenState extends State<MapScreen> {
             onPressed: () {
               latit = 19.0760 + Random().nextDouble() * 0.1 - 0.005;
               longit = 72.8777 + Random().nextDouble() * 0.1 - 0.005;
-              addMarker(_hereMapController, latit, longit, "assets/images/ecoeats.png");
+              addMarker(_hereMapController, latit, longit,
+                  "assets/images/ecoeatspin.png");
             },
           ),
           FloatingActionButton.small(
@@ -110,15 +111,21 @@ class _MapScreenState extends State<MapScreen> {
     double tilt = 0;
     // We want to show the route fitting in the map view with an additional padding of 50 pixels.
     Point2D origin = Point2D(50, 50);
-    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
+    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100,
+        _hereMapController.viewportSize.height - 100);
     Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
 
     // Animate to the route within a duration of 3 seconds.
-    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route!.boundingBox,
-        GeoOrientationUpdate(bearing, tilt),
-        mapViewport);
-    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
-        update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
+    MapCameraUpdate update =
+        MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(
+            route!.boundingBox,
+            GeoOrientationUpdate(bearing, tilt),
+            mapViewport);
+    MapCameraAnimation animation =
+        MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
+            update,
+            const Duration(milliseconds: 3000),
+            anim.Easing(anim.EasingFunction.inCubic));
     _hereMapController.camera.startAnimation(animation);
   }
 
@@ -126,7 +133,8 @@ class _MapScreenState extends State<MapScreen> {
     GeoBox? geoBox = _hereMapController.camera.boundingBox;
     if (geoBox == null) {
       // Happens only when map is not fully covering the viewport as the map is tilted.
-      print("The map view is tilted, falling back to fixed destination coordinate.");
+      print(
+          "The map view is tilted, falling back to fixed destination coordinate.");
       return GeoCoordinates(mylatit, mylongit);
     }
 
@@ -144,39 +152,58 @@ class _MapScreenState extends State<MapScreen> {
     return GeoCoordinates(lat, lon);
   }
 
-  int i=0;
-  List options = [rout.CarOptions, rout.TruckOptions, rout.PedestrianOptions, rout.ScooterOptions, rout.BicycleOptions, rout.EVCarOptions, rout.TaxiOptions, rout.BusOptions, rout.TaxiOptions];
+  int i = 0;
+  List options = [
+    rout.CarOptions,
+    rout.TruckOptions,
+    rout.PedestrianOptions,
+    rout.ScooterOptions,
+    rout.BicycleOptions,
+    rout.EVCarOptions,
+    rout.TaxiOptions,
+    rout.BusOptions,
+    rout.TaxiOptions
+  ];
   Future<void> addRoute() async {
     logger.d("Calculating ${options[i]} route.");
     var startGeoCoordinates = GeoCoordinates(mylatit, mylongit);
     var destinationGeoCoordinates = GeoCoordinates(latit, longit);
+    logger.d("$mylatit + $mylongit + $latit + $longit");
     var startWaypoint = rout.Waypoint.withDefaults(startGeoCoordinates);
-    var destinationWaypoint = rout.Waypoint.withDefaults(destinationGeoCoordinates);
+    var destinationWaypoint =
+        rout.Waypoint.withDefaults(destinationGeoCoordinates);
 
     var w1 = _createRandomGeoCoordinatesInViewport();
-    addMarker(_hereMapController, w1.latitude, w1.longitude, "assets/images/ecoeats.png");
+    addMarker(_hereMapController, w1.latitude, w1.longitude,
+        "assets/images/ecoeatspin.png");
     var waypoint1 = rout.Waypoint.withDefaults(w1);
     var w2 = _createRandomGeoCoordinatesInViewport();
-    addMarker(_hereMapController, w2.latitude, w2.longitude, "assets/images/ecoeats.png");
+    addMarker(_hereMapController, w2.latitude, w2.longitude,
+        "assets/images/ecoeatspin.png");
     var waypoint2 = rout.Waypoint.withDefaults(w2);
 
-    List<rout.Waypoint> waypoints = [startWaypoint, waypoint1, waypoint2, destinationWaypoint];
+    List<rout.Waypoint> waypoints = [
+      startWaypoint,
+      waypoint1,
+      waypoint2,
+      destinationWaypoint
+    ];
 
     _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
-            (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
-          if (routingError == null) {
-            // When error is null, it is guaranteed that the list is not empty.
-            rout.Route route = routeList!.first;
-            _animateToRoute(route);
-            _showRouteDetails(route);
-            _showRouteOnMap(route);
-            _logRouteViolations(route);
-          } else {
-            var error = routingError.toString();
-            _showDialog('Error', 'Error while calculating a route: $error');
-            logger.d(error);
-          }
-        });
+        (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
+      if (routingError == null) {
+        // When error is null, it is guaranteed that the list is not empty.
+        rout.Route route = routeList!.first;
+        _animateToRoute(route);
+        _showRouteDetails(route);
+        _showRouteOnMap(route);
+        _logRouteViolations(route);
+      } else {
+        var error = routingError.toString();
+        _showDialog('Error', 'Error while calculating a route: $error');
+        logger.d(error);
+      }
+    });
     i++;
   }
 
@@ -210,7 +237,8 @@ class _MapScreenState extends State<MapScreen> {
   void _logRouteViolations(rout.Route route) {
     for (var section in route.sections) {
       for (var notice in section.sectionNotices) {
-        logger.d("This route contains the following warning: " + notice.code.toString());
+        logger.d("This route contains the following warning: " +
+            notice.code.toString());
       }
     }
   }
@@ -225,7 +253,8 @@ class _MapScreenState extends State<MapScreen> {
       routeMapPolyline = MapPolyline.withRepresentation(
           routeGeoPolyline,
           MapPolylineSolidRepresentation(
-              MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
+              MapMeasureDependentRenderSize.withSingleSize(
+                  RenderSizeUnit.pixels, widthInPixels),
               polylineColor,
               LineCap.round));
       _hereMapController.mapScene.addMapPolyline(routeMapPolyline);
@@ -273,7 +302,8 @@ class _MapScreenState extends State<MapScreen> {
           trafficSpanMapPolyline = new MapPolyline.withRepresentation(
               span.geometry,
               MapPolylineSolidRepresentation(
-                  MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
+                  MapMeasureDependentRenderSize.withSingleSize(
+                      RenderSizeUnit.pixels, widthInPixels),
                   lineColor,
                   LineCap.round));
           _hereMapController.mapScene.addMapPolyline(trafficSpanMapPolyline);
@@ -320,7 +350,6 @@ class _MapScreenState extends State<MapScreen> {
     return '$hours:$minutes min';
   }
 
-
   Future<void> _onMapCreated(HereMapController hereMapController) async {
     _hereMapController = hereMapController;
     _locationIndicator = LocationIndicator();
@@ -331,7 +360,8 @@ class _MapScreenState extends State<MapScreen> {
     final double longitude = locationData.longitude!;
 
     //File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
-    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalDay, (MapError? error) {
+    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalNight,
+        (MapError? error) {
       // hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
       if (error != null) {
         print('Map scene not loaded. MapError: ${error.toString()}');
@@ -339,10 +369,14 @@ class _MapScreenState extends State<MapScreen> {
       }
 
       const double distanceToEarthInMeters = 20000;
-      MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
-      hereMapController.mapScene.enableFeatures({MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
-      hereMapController.mapScene.enableFeatures({MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
+      MapMeasure mapMeasureZoom =
+          MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
+      hereMapController.camera.lookAtPointWithMeasure(
+          GeoCoordinates(latitude, longitude), mapMeasureZoom);
+      hereMapController.mapScene.enableFeatures(
+          {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      hereMapController.mapScene.enableFeatures(
+          {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
   }
 
@@ -354,14 +388,16 @@ class _MapScreenState extends State<MapScreen> {
       mylatit = locationData!.latitude!;
       mylongit = locationData.longitude!;
       // No last known location, use default instead.
-      myLocation = Location.withCoordinates(GeoCoordinates(locationData!.latitude!, locationData.longitude!));
+      myLocation = Location.withCoordinates(
+          GeoCoordinates(locationData!.latitude!, locationData.longitude!));
       myLocation.time = DateTime.now();
     }
 
     // Set-up location indicator.
     // Enable a halo to indicate the horizontal accuracy.
     _locationIndicator!.isAccuracyVisualized = true;
-    _locationIndicator!.locationIndicatorStyle = LocationIndicatorIndicatorStyle.pedestrian;
+    _locationIndicator!.locationIndicatorStyle =
+        LocationIndicatorIndicatorStyle.pedestrian;
     _locationIndicator!.updateLocation(myLocation);
     _locationIndicator!.enable(_hereMapController!);
 
@@ -377,15 +413,16 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void addMarker(HereMapController hereMapController, double lati, double longi, String logo) {
+  void addMarker(HereMapController hereMapController, double lati, double longi,
+      String logo) {
     logger.d("Add markers");
-    int imageWidth = 300;
-    int imageHeight = 300;
-    MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
+    int imageWidth = 100;
+    int imageHeight = 100;
+    MapImage mapImage =
+        MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
     hereMapController.mapScene.addMapMarker(mapMarker);
   }
-
 
   Widget _createWidget(String label, Color backgroundColor) {
     return Container(
