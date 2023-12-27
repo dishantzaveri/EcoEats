@@ -63,10 +63,10 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _onMapCreated(HereMapController hereMapController) async {
     loc.Location location = loc.Location();
-    loc.LocationData locationData = await location.getLocation();
+    loc.LocationData _locationData = await location.getLocation();
 
-    final double latitude = locationData.latitude!;
-    final double longitude = locationData.longitude!;
+    final double latitude = _locationData.latitude!;
+    final double longitude = _locationData.longitude!;
 
     File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
     hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
@@ -77,7 +77,7 @@ class _MapScreenState extends State<MapScreen> {
 
       const double distanceToEarthInMeters = 50000;
       MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
+      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(19.0760, 72.8777), mapMeasureZoom);
 
       hereMapController.pinWidget(_createWidget("Centered ViewPin", Color.fromARGB(150, 0, 194, 138)), GeoCoordinates(19.0760, 72.8777));
     });
