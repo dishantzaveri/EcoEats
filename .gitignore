@@ -44,6 +44,7 @@ app.*.map.json
 
 # here_sdk
 /plugins/here_sdk/
+/plugins/here_sdk_navigate/
 
 # exclude all .env files from source control
 *.env

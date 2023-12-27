@@ -47,14 +47,11 @@
 	<true/>
 
 	<!-- Added by Developer -->
-	<!-- NSLocationWhenInUseUsageDescription -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your location when the app is in the foreground.</string>
-	<!-- NSLocationAlwaysAndWhenInUseUsageDescription -->
+	<string>This app needs access to location in the background.</string>    
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your location when the app is in the foreground and background.</string>
-	<!-- UIBackgroundModes -->
-	<key>UIBackgroundModes</key>
-	<string>fetch</string>
+	<string>This app needs access to location when open and in the background.</string>
 </dict>
 </plist>
