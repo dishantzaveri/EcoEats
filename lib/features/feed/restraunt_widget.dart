@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:here_hackathon/utils/const.dart';
 import 'package:here_hackathon/utils/typography.dart';
 
 class RestrauntWidget extends StatelessWidget {
-  const RestrauntWidget({Key? key}) : super(key: key);
+  RestrauntWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class RestrauntWidget extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(20)),
-              child: Image.network("https://source.unsplash.com/random/400x200"),
+              child: Image.network("https://source.unsplash.com/random/400x200?sig=${Random().nextInt(100)}"),
             ),
             Text(
               "Restraunt YAY",

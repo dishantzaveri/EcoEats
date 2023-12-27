@@ -11,6 +11,7 @@ import 'package:here_sdk/mapview.dart';
 import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
+import 'package:here_sdk/animation.dart' as anim;
 
 import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
@@ -98,6 +99,51 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+
+  double _getRandom(double min, double max) {
+    return min + Random().nextDouble() * (max - min);
+  }
+
+  void _animateToRoute(rout.Route route) {
+    // The animation results in an untilted and unrotated map.
+    double bearing = 0;
+    double tilt = 0;
+    // We want to show the route fitting in the map view with an additional padding of 50 pixels.
+    Point2D origin = Point2D(50, 50);
+    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
+    Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
+
+    // Animate to the route within a duration of 3 seconds.
+    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route!.boundingBox,
+        GeoOrientationUpdate(bearing, tilt),
+        mapViewport);
+    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
+        update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
+    _hereMapController.camera.startAnimation(animation);
+  }
+
+  GeoCoordinates _createRandomGeoCoordinatesInViewport() {
+    GeoBox? geoBox = _hereMapController.camera.boundingBox;
+    if (geoBox == null) {
+      // Happens only when map is not fully covering the viewport as the map is tilted.
+      print("The map view is tilted, falling back to fixed destination coordinate.");
+      return GeoCoordinates(mylatit, mylongit);
+    }
+
+    GeoCoordinates northEast = geoBox.northEastCorner;
+    GeoCoordinates southWest = geoBox.southWestCorner;
+
+    double minLat = southWest.latitude;
+    double maxLat = northEast.latitude;
+    double lat = _getRandom(minLat, maxLat);
+
+    double minLon = southWest.longitude;
+    double maxLon = northEast.longitude;
+    double lon = _getRandom(minLon, maxLon);
+
+    return GeoCoordinates(lat, lon);
+  }
+
   int i=0;
   List options = [rout.CarOptions, rout.TruckOptions, rout.PedestrianOptions, rout.ScooterOptions, rout.BicycleOptions, rout.EVCarOptions, rout.TaxiOptions, rout.BusOptions, rout.TaxiOptions];
   Future<void> addRoute() async {
@@ -107,23 +153,58 @@ class _MapScreenState extends State<MapScreen> {
     var startWaypoint = rout.Waypoint.withDefaults(startGeoCoordinates);
     var destinationWaypoint = rout.Waypoint.withDefaults(destinationGeoCoordinates);
 
-    List<rout.Waypoint> waypoints = [startWaypoint, destinationWaypoint];
+    var w1 = _createRandomGeoCoordinatesInViewport();
+    addMarker(_hereMapController, w1.latitude, w1.longitude, "assets/images/ecoeats.png");
+    var waypoint1 = rout.Waypoint.withDefaults(w1);
+    var w2 = _createRandomGeoCoordinatesInViewport();
+    addMarker(_hereMapController, w2.latitude, w2.longitude, "assets/images/ecoeats.png");
+    var waypoint2 = rout.Waypoint.withDefaults(w2);
+
+    List<rout.Waypoint> waypoints = [startWaypoint, waypoint1, waypoint2, destinationWaypoint];
 
     _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
             (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
           if (routingError == null) {
             // When error is null, it is guaranteed that the list is not empty.
             rout.Route route = routeList!.first;
+            _animateToRoute(route);
             _showRouteDetails(route);
             _showRouteOnMap(route);
             _logRouteViolations(route);
           } else {
             var error = routingError.toString();
-            //_showDialog('Error', 'Error while calculating a route: $error');
+            _showDialog('Error', 'Error while calculating a route: $error');
             logger.d(error);
           }
         });
     i++;
+  }
+
+  Future<void> _showDialog(String title, String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _logRouteViolations(rout.Route route) {
@@ -221,7 +302,7 @@ class _MapScreenState extends State<MapScreen> {
         ', Length: ' +
         _formatLength(lengthInMeters);
 
-    //_showDialog('Route Details', '$routeDetails');
+    _showDialog('Route Details', '$routeDetails');
     logger.d(routeDetails);
   }
 
@@ -260,6 +341,8 @@ class _MapScreenState extends State<MapScreen> {
       const double distanceToEarthInMeters = 20000;
       MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
       hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
   }
 
