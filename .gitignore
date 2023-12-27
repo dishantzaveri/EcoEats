@@ -41,3 +41,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# here_sdk
+/plugins/here_sdk/
+
+# exclude all .env files from source control
+*.env
+/lib/utils/env/env.g.dart
