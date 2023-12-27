@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Container, Row, Col } from "reactstrap";
 import CommonSection from "../components/UI/common-section/CommonSection";
 import Helmet from "../components/Helmet/Helmet";
-
+import { Link } from "react-router-dom";
 import "../styles/checkout.css";
 
 const Checkout = () => {
@@ -93,8 +93,8 @@ const Checkout = () => {
                     onChange={(e) => setPostalCode(e.target.value)}
                   />
                 </div>
-                <button type="submit" className="addTOCart__btn">
-                  Payment
+                <button className="addTOCart__btn">
+                  <Link to="/loc">Payment</Link>
                 </button>
               </form>
             </Col>
