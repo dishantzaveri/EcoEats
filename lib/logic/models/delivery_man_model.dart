@@ -1,4 +1,4 @@
-class DeliveryManModel {
+class RiderModel {
   String id;
   String name;
   String phone;
@@ -18,7 +18,7 @@ class DeliveryManModel {
   double currentLatitude;
   double currentLongitude;
 
-  DeliveryManModel({
+  RiderModel({
     required this.id,
     required this.name,
     required this.phone,
@@ -39,8 +39,8 @@ class DeliveryManModel {
     required this.currentLongitude,
   });
 
-  factory DeliveryManModel.fromJson(Map<String, dynamic> json) {
-    return DeliveryManModel(
+  factory RiderModel.fromJson(Map<String, dynamic> json) {
+    return RiderModel(
       id: json['id'],
       name: json['name'],
       phone: json['phone'],
@@ -90,7 +90,7 @@ class DeliveryManModel {
     return 'DeliveryManModel(id: $id, name: $name, phone: $phone, email: $email, address: $address, city: $city, state: $state, country: $country, zipCode: $zipCode, addressLatitude: $addressLatitude, addressLongitude: $addressLongitude, status: $status, rating: $rating, imageUrl: $imageUrl, vehicleType: $vehicleType, vehicleNumber: $vehicleNumber, currentLatitude: $currentLatitude, currentLongitude: $currentLongitude)';
   }
 
-  DeliveryManModel copyWith({
+  RiderModel copyWith({
     String? id,
     String? name,
     String? phone,
@@ -110,7 +110,7 @@ class DeliveryManModel {
     double? currentLatitude,
     double? currentLongitude,
   }) {
-    return DeliveryManModel(
+    return RiderModel(
       id: id ?? this.id,
       name: name ?? this.name,
       phone: phone ?? this.phone,
@@ -136,7 +136,7 @@ class DeliveryManModel {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is DeliveryManModel &&
+    return other is RiderModel &&
         other.id == id &&
         other.name == name &&
         other.phone == phone &&

@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Future<void> initApis() async {
     logger.d("initApis");
     context.read<LocationStore>().initLocation();
-    context.read<OrderStore>().fetchOrderData('1JJsyrJ4WO8fm32et6cs');
+    context.read<OrderStore>().init();
     if (!context.read<AuthStore>().isAuthenticated) {
       context.read<AuthStore>().authStateChanges();
     }
