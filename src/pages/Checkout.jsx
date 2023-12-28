@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Container, Row, Col } from "reactstrap";
-import CommonSection from "../components/UI/common-section/CommonSection";
-import Helmet from "../components/Helmet/Helmet";
 import { Link } from "react-router-dom";
+import { Col, Container, Row } from "reactstrap";
+import Helmet from "../components/Helmet/Helmet";
+import CommonSection from "../components/UI/common-section/CommonSection";
 import "../styles/checkout.css";
+
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Checkout = () => {
   const [enterName, setEnterName] = useState("");
@@ -19,6 +22,24 @@ const Checkout = () => {
   const shippingCost = 30;
 
   const totalAmount = cartTotalAmount + Number(shippingCost);
+
+  const addOrder = async (e) => {
+    e.preventDefault();
+
+    try {
+      const docRef = await addDoc(collection(db, "orders"), {
+        name: enterName,
+        email: enterEmail,
+        phone: enterNumber,
+        country: enterCountry,
+        city: enterCity,
+        postalCode: postalCode,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -96,9 +117,14 @@ const Checkout = () => {
                 <button className="addTOCart__btn">
                   <Link to="/location">Payment</Link>
                 </button>
+                <button
+                  type="submit"
+                  className="addTOCart__btn"
+                  onClick={addOrder}
+                ></button>
               </form>
             </Col>
-
+            ``
             <Col lg="4" md="6">
               <div className="checkout__bill">
                 <h6 className="d-flex align-items-center justify-content-between mb-3">
