@@ -471,8 +471,8 @@ class _MapScreenState extends State<MapScreen> {
               children: <Widget>[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    imageUrl,
+                  child: Image.asset(
+                    "assets/foods/${Random().nextInt(6) + 1}.png",
                     fit: BoxFit.cover,
                   ),
                 ),
