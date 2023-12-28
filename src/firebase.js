@@ -1,20 +1,15 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
-// Follow this pattern to import other Firebase services
-// import { } from 'firebase/<service>';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "@firebase/firestore"
 
-// TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  //...
+  apiKey: "AIzaSyDA4lRhWya0vj422cRQyoTeROkWbuUA9o0",
+  authDomain: "tourmate-b25c4.firebaseapp.com",
+  projectId: "tourmate-b25c4",
+  storageBucket: "tourmate-b25c4.appspot.com",
+  messagingSenderId: "721687862384",
+  appId: "1:721687862384:web:3a6cdc2f104a3476cda8b5",
+  measurementId: "G-1ZC5PV5R3Q"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Get a list of cities from your database
-async function getCities(db) {
-  const citiesCol = collection(db, 'cities');
-  const citySnapshot = await getDocs(citiesCol);
-  const cityList = citySnapshot.docs.map(doc => doc.data());
-  return cityList;
-}
+export const firestore = getFirestore(app)
