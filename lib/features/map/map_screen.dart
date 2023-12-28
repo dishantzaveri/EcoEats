@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:here_hackathon/logic/models/order_model.dart';
 import 'package:here_hackathon/logic/models/rider_model.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:here_hackathon/utils/const.dart';
@@ -19,6 +20,7 @@ import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
 import 'package:here_sdk/animation.dart' as anim;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
@@ -51,6 +53,9 @@ class _MapScreenState extends State<MapScreen> {
   var orders;
   var riders;
   List<rout.Waypoint> waypoints = [];
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late Stream<QuerySnapshot> stream;
+  bool isFirstEvent = true;
 
   @override
   void initState() {
@@ -68,6 +73,82 @@ class _MapScreenState extends State<MapScreen> {
     //myLoc();
     orders = context.read<OrderStore>().orders.values.toList();
     riders = context.read<OrderStore>().riders.values.toList();
+    // Get a reference to the collection.
+    CollectionReference collection = firestore.collection('orders');
+
+    // Get the stream of snapshots.
+    stream = collection.snapshots();
+
+    // Listen to the stream.
+    stream.listen((QuerySnapshot snapshot) {
+      if (isFirstEvent) {
+        isFirstEvent = false;
+        return;
+      }
+      // Check if a new document has been added.
+      List<DocumentChange> documentChanges = snapshot.docChanges;
+      if (documentChanges
+              .any((change) => change.type == DocumentChangeType.added) &&
+          !isFirstEvent) {
+        orders = context.read<OrderStore>().orders.values.toList();
+        OrderModel ord = OrderModel.fromJson(
+            documentChanges[0].doc.data() as Map<String, dynamic>);
+        logger.d(ord);
+        addMarker(_hereMapController, ord.sourceLatitude, ord.sourceLongitude,
+            "assets/images/food.png");
+        addMarker(_hereMapController, ord.destinationLatitude,
+            ord.destinationLongitude, "assets/images/ecoeatspin.png");
+        // waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
+        //     order.sourceLatitude, order.sourceLongitude)));
+        waypoints.add(rout.Waypoint.withDefaults(
+            GeoCoordinates(ord.destinationLatitude, ord.destinationLongitude)));
+        // If a new document has been added, show a bottom modal screen.
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'A new order has been placed in your vicinity!',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Would you like to club your delivery with this order to be more green and earn rewards?',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      ElevatedButton(
+                        child: const Text('Yes'),
+                        onPressed: () {
+                          //_onMapCreated(_hereMapController);
+                          // Handle the Yes option here.
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ElevatedButton(
+                        child: const Text('No'),
+                        onPressed: () {
+                          //_onMapCreated(_hereMapController);
+                          // Handle the No option here.
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }
+    });
   }
 
   Future _speak(String text) async {
@@ -89,7 +170,7 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         openButtonBuilder: RotateFloatingActionButtonBuilder(
-          child: Image.asset("assets/images/eco_eat_dark.png"),
+          child: Image.asset("assets/images/ecoeatspin.png"),
           fabSize: ExpandableFabSize.regular,
           foregroundColor: Palette.secondary,
           backgroundColor: Palette.primary,
@@ -111,12 +192,31 @@ class _MapScreenState extends State<MapScreen> {
               // longit = mylongit + Random().nextDouble() * 0.1 - 0.005;
               // addMarker(_hereMapController, latit, longit,
               //     "assets/images/ecoeatspin.png");
-              logger.d(allMarkers[2].coordinates.latitude);
-              animateMarker(
-                  allMarkers[0],
-                  GeoCoordinates(allMarkers[2].coordinates.latitude,
-                      allMarkers[2].coordinates.longitude),
-                  durationMs: 10000);
+              // logger.d(allMarkers[2].coordinates.latitude);
+              // animateMarker(
+              //     allMarkers[0],
+              //     GeoCoordinates(allMarkers[2].coordinates.latitude,
+              //         allMarkers[2].coordinates.longitude),
+              //     durationMs: 10000);
+              DocumentReference copyFrom = FirebaseFirestore.instance
+                  .collection('orders')
+                  .doc('0Ur71HGoD54A2Sh5UA7U');
+              DocumentReference copyTo =
+                  FirebaseFirestore.instance.collection('orders').doc('testme');
+
+              copyFrom.get().then((value) {
+                Map<String, dynamic> data =
+                    value.data() as Map<String, dynamic>;
+                data['sourceLatitude'] = 0.0;
+                data['sourceLongitude'] = 0.0;
+                data['destinationLatitude'] = 1.0;
+                data['destinationLongitude'] = 1.0;
+                data['sourceName'] = "EGRHDTGJMFHDGTFSEASFGFH";
+                copyTo.set(data);
+                //logger.d(data);
+              });
+              orders = context.read<OrderStore>().orders.values.toList();
+              logger.d(orders);
             },
           ),
           FloatingActionButton.small(
