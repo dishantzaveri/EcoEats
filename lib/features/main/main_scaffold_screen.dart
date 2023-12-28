@@ -5,9 +5,9 @@ import 'package:here_hackathon/features/map/map_screen.dart';
 
 import '../../utils/palette.dart';
 import '../bytes/byte_screen.dart';
+import '../edit_profile/fifth.dart';
 import '../feed/feed_screen.dart';
-import '../micro_learning/micro_learning_screen.dart';
-import '../network/network_screen.dart';
+import '../network/food_screen.dart';
 
 @RoutePage()
 class MainScaffoldScreen extends StatefulWidget {
@@ -37,7 +37,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
           FeedScreen(),
           FoodScreen(),
           ByteScreen(),
-          MicroLearningScreen(),
+          ProfileScreen(),
           MapScreen(),
         ],
       ),

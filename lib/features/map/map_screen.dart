@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:here_hackathon/logic/models/rider_model.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:here_hackathon/utils/const.dart';
 import 'package:here_hackathon/utils/typography.dart';
+import 'package:here_sdk/animation.dart' as anim;
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/gestures.dart';
@@ -18,7 +18,6 @@ import 'package:here_sdk/navigation.dart' as nav;
 import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
-import 'package:here_sdk/animation.dart' as anim;
 
 import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
@@ -89,10 +88,14 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         openButtonBuilder: RotateFloatingActionButtonBuilder(
-          child: Image.asset("assets/images/eco_eat_dark.png"),
+          child: Image.asset(
+            "assets/images/ecoeatspin.png",
+            width: 30,
+            height: 30,
+          ),
           fabSize: ExpandableFabSize.regular,
           foregroundColor: Palette.secondary,
-          backgroundColor: Palette.primary,
+          backgroundColor: Palette.primary[100],
           shape: const CircleBorder(),
         ),
         closeButtonBuilder: DefaultFloatingActionButtonBuilder(
@@ -112,11 +115,7 @@ class _MapScreenState extends State<MapScreen> {
               // addMarker(_hereMapController, latit, longit,
               //     "assets/images/ecoeatspin.png");
               logger.d(allMarkers[2].coordinates.latitude);
-              animateMarker(
-                  allMarkers[0],
-                  GeoCoordinates(allMarkers[2].coordinates.latitude,
-                      allMarkers[2].coordinates.longitude),
-                  durationMs: 10000);
+              animateMarker(allMarkers[0], GeoCoordinates(allMarkers[2].coordinates.latitude, allMarkers[2].coordinates.longitude), durationMs: 10000);
             },
           ),
           FloatingActionButton.small(
@@ -137,9 +136,7 @@ class _MapScreenState extends State<MapScreen> {
             heroTag: null,
             child: const Icon(Icons.navigation),
             onPressed: () async {
-              isNavigating
-                  ? _visualNavigator!.stopRendering()
-                  : _startGuidance(route);
+              isNavigating ? _visualNavigator!.stopRendering() : _startGuidance(route);
               isNavigating ? null : flutterTts.stop();
               setState(() {
                 isNavigating = !isNavigating;
@@ -165,8 +162,7 @@ class _MapScreenState extends State<MapScreen> {
 
     // Hook in one of the many listeners. Here we set up a listener to get instructions on the maneuvers to take while driving.
     // For more details, please check the "navigation_app" example and the Developer's Guide.
-    _visualNavigator!.maneuverNotificationListener =
-        nav.ManeuverNotificationListener((String maneuverText) async {
+    _visualNavigator!.maneuverNotificationListener = nav.ManeuverNotificationListener((String maneuverText) async {
       logger.d("ManeuverNotifications: $maneuverText");
       await _speak(maneuverText);
     });
@@ -182,8 +178,7 @@ class _MapScreenState extends State<MapScreen> {
   _setupLocationSource(LocationListener locationListener, rout.Route route) {
     try {
       // Provides fake GPS signals based on the route geometry.
-      _locationSimulator = nav.LocationSimulator.withRoute(
-          route, nav.LocationSimulatorOptions());
+      _locationSimulator = nav.LocationSimulator.withRoute(route, nav.LocationSimulatorOptions());
     } on InstantiationException {
       throw Exception("Initialization of LocationSimulator failed.");
     }
@@ -202,21 +197,12 @@ class _MapScreenState extends State<MapScreen> {
     double tilt = 0;
     // We want to show the route fitting in the map view with an additional padding of 50 pixels.
     Point2D origin = Point2D(50, 50);
-    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100,
-        _hereMapController.viewportSize.height - 100);
+    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
     Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
 
     // Animate to the route within a duration of 3 seconds.
-    MapCameraUpdate update =
-        MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(
-            route!.boundingBox,
-            GeoOrientationUpdate(bearing, tilt),
-            mapViewport);
-    MapCameraAnimation animation =
-        MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
-            update,
-            const Duration(milliseconds: 3000),
-            anim.Easing(anim.EasingFunction.inCubic));
+    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route!.boundingBox, GeoOrientationUpdate(bearing, tilt), mapViewport);
+    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
     _hereMapController.camera.startAnimation(animation);
   }
 
@@ -224,8 +210,7 @@ class _MapScreenState extends State<MapScreen> {
     GeoBox? geoBox = _hereMapController.camera.boundingBox;
     if (geoBox == null) {
       // Happens only when map is not fully covering the viewport as the map is tilted.
-      print(
-          "The map view is tilted, falling back to fixed destination coordinate.");
+      print("The map view is tilted, falling back to fixed destination coordinate.");
       return GeoCoordinates(mylatit, mylongit);
     }
 
@@ -244,23 +229,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   int i = 0;
-  List options = [
-    rout.CarOptions,
-    rout.TruckOptions,
-    rout.PedestrianOptions,
-    rout.ScooterOptions,
-    rout.BicycleOptions,
-    rout.EVCarOptions,
-    rout.TaxiOptions,
-    rout.BusOptions,
-    rout.TaxiOptions
-  ];
+  List options = [rout.CarOptions, rout.TruckOptions, rout.PedestrianOptions, rout.ScooterOptions, rout.BicycleOptions, rout.EVCarOptions, rout.TaxiOptions, rout.BusOptions, rout.TaxiOptions];
   Future<void> addRoute() async {
     var startGeoCoordinates = GeoCoordinates(mylatit, mylongit);
     //var destinationGeoCoordinates = GeoCoordinates(latit, longit);
     var startWaypoint = rout.Waypoint.withDefaults(startGeoCoordinates);
-    var destinationWaypoint = rout.Waypoint.withDefaults(GeoCoordinates(
-        orders[3].destinationLatitude, orders[3].destinationLongitude));
+    var destinationWaypoint = rout.Waypoint.withDefaults(GeoCoordinates(orders[3].destinationLatitude, orders[3].destinationLongitude));
 
     List<rout.Waypoint> initailPoints = [
       startWaypoint,
@@ -273,26 +247,16 @@ class _MapScreenState extends State<MapScreen> {
     List<rout.Waypoint> selectedWaypoints = [startWaypoint];
     rout.Route candidateRoute;
 
-    _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(),
-        (rout.RoutingError? routingError,
-            List<rout.Route>? initialRouteList) async {
+    _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(), (rout.RoutingError? routingError, List<rout.Route>? initialRouteList) async {
       if (routingError == null) {
         rout.Route initialRoute = initialRouteList!.first;
         double initialDistance = initialRoute.lengthInMeters.toDouble();
         for (var waypoint in waypoints) {
-          var candidateWaypoints = [
-            ...selectedWaypoints,
-            waypoint,
-            destinationWaypoint
-          ];
-          _routingEngine
-              .calculateCarRoute(candidateWaypoints, rout.CarOptions(),
-                  (rout.RoutingError? routingError,
-                      List<rout.Route>? routeList) async {
+          var candidateWaypoints = [...selectedWaypoints, waypoint, destinationWaypoint];
+          _routingEngine.calculateCarRoute(candidateWaypoints, rout.CarOptions(), (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
             if (routingError == null) {
               candidateRoute = routeList!.first;
-              double candidateDistance =
-                  candidateRoute.lengthInMeters.toDouble();
+              double candidateDistance = candidateRoute.lengthInMeters.toDouble();
 
               // Check if adding the waypoint increases the route length by a certain threshold (e.g., 10%).
               double threshold = 1.5;
@@ -353,8 +317,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Future<void> _markerPopup(String title, String message, String imageUrl,
-      String qty, String price, String status) async {
+  Future<void> _markerPopup(String title, String message, String imageUrl, String qty, String price, String status) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -414,8 +377,7 @@ class _MapScreenState extends State<MapScreen> {
   void _logRouteViolations(rout.Route route) {
     for (var section in route.sections) {
       for (var notice in section.sectionNotices) {
-        logger.d("This route contains the following warning: " +
-            notice.code.toString());
+        logger.d("This route contains the following warning: " + notice.code.toString());
       }
     }
   }
@@ -428,12 +390,7 @@ class _MapScreenState extends State<MapScreen> {
     MapPolyline routeMapPolyline;
     try {
       routeMapPolyline = MapPolyline.withRepresentation(
-          routeGeoPolyline,
-          MapPolylineSolidRepresentation(
-              MapMeasureDependentRenderSize.withSingleSize(
-                  RenderSizeUnit.pixels, widthInPixels),
-              polylineColor,
-              LineCap.round));
+          routeGeoPolyline, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), polylineColor, LineCap.round));
       _hereMapController.mapScene.addMapPolyline(routeMapPolyline);
       _mapPolylines.add(routeMapPolyline);
     } on MapPolylineRepresentationInstantiationException catch (e) {
@@ -477,12 +434,7 @@ class _MapScreenState extends State<MapScreen> {
         MapPolyline trafficSpanMapPolyline;
         try {
           trafficSpanMapPolyline = new MapPolyline.withRepresentation(
-              span.geometry,
-              MapPolylineSolidRepresentation(
-                  MapMeasureDependentRenderSize.withSingleSize(
-                      RenderSizeUnit.pixels, widthInPixels),
-                  lineColor,
-                  LineCap.round));
+              span.geometry, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), lineColor, LineCap.round));
           _hereMapController.mapScene.addMapPolyline(trafficSpanMapPolyline);
           _mapPolylines.add(trafficSpanMapPolyline);
         } on MapPolylineRepresentationInstantiationException catch (e) {
@@ -502,12 +454,8 @@ class _MapScreenState extends State<MapScreen> {
     int estimatedTrafficDelayInSeconds = route.trafficDelay.inSeconds;
     int lengthInMeters = route.lengthInMeters;
 
-    String routeDetails = 'Travel Time: ' +
-        _formatTime(estimatedTravelTimeInSeconds) +
-        ', Traffic Delay: ' +
-        _formatTime(estimatedTrafficDelayInSeconds) +
-        ', Length: ' +
-        _formatLength(lengthInMeters);
+    String routeDetails =
+        'Travel Time: ' + _formatTime(estimatedTravelTimeInSeconds) + ', Traffic Delay: ' + _formatTime(estimatedTrafficDelayInSeconds) + ', Length: ' + _formatLength(lengthInMeters);
 
     _showDialog('Route Details', '$routeDetails');
     logger.d(routeDetails);
@@ -537,8 +485,7 @@ class _MapScreenState extends State<MapScreen> {
     final double longitude = locationData.longitude!;
 
     //File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
-    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalNight,
-        (MapError? error) {
+    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalNight, (MapError? error) {
       // hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
       if (error != null) {
         print('Map scene not loaded. MapError: ${error.toString()}');
@@ -546,29 +493,21 @@ class _MapScreenState extends State<MapScreen> {
       }
 
       const double distanceToEarthInMeters = 20000;
-      MapMeasure mapMeasureZoom =
-          MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      hereMapController.camera.lookAtPointWithMeasure(
-          GeoCoordinates(latitude, longitude), mapMeasureZoom);
-      hereMapController.mapScene.enableFeatures(
-          {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
-      hereMapController.mapScene.enableFeatures(
-          {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
+      MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
+      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
     myLoc();
     for (RiderModel rider in riders) {
-      addMarker(_hereMapController, rider.currentLatitude,
-          rider.currentLongitude, "assets/images/rider.png");
+      addMarker(_hereMapController, rider.currentLatitude, rider.currentLongitude, "assets/images/rider.png");
     }
     for (var order in orders) {
-      addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude,
-          "assets/images/food.png");
-      addMarker(_hereMapController, order.destinationLatitude,
-          order.destinationLongitude, "assets/images/ecoeatspin.png");
+      addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude, "assets/images/food.png");
+      addMarker(_hereMapController, order.destinationLatitude, order.destinationLongitude, "assets/images/ecoeatspin.png");
       // waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
       //     order.sourceLatitude, order.sourceLongitude)));
-      waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
-          order.destinationLatitude, order.destinationLongitude)));
+      waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(order.destinationLatitude, order.destinationLongitude)));
     }
   }
 
@@ -580,16 +519,14 @@ class _MapScreenState extends State<MapScreen> {
       mylatit = locationData!.latitude!;
       mylongit = locationData.longitude!;
       // No last known location, use default instead.
-      myLocation = Location.withCoordinates(
-          GeoCoordinates(locationData!.latitude!, locationData.longitude!));
+      myLocation = Location.withCoordinates(GeoCoordinates(locationData!.latitude!, locationData.longitude!));
       myLocation.time = DateTime.now();
     }
 
     // Set-up location indicator.
     // Enable a halo to indicate the horizontal accuracy.
     _locationIndicator!.isAccuracyVisualized = true;
-    _locationIndicator!.locationIndicatorStyle =
-        LocationIndicatorIndicatorStyle.pedestrian;
+    _locationIndicator!.locationIndicatorStyle = LocationIndicatorIndicatorStyle.pedestrian;
     _locationIndicator!.updateLocation(myLocation);
     _locationIndicator!.enable(_hereMapController!);
 
@@ -607,28 +544,23 @@ class _MapScreenState extends State<MapScreen> {
 
   List allMarkers = [];
 
-  void addMarker(HereMapController hereMapController, double lati, double longi,
-      String logo) {
+  void addMarker(HereMapController hereMapController, double lati, double longi, String logo) {
     logger.d("Add markers");
     int imageWidth = 100;
     int imageHeight = 100;
-    MapImage mapImage =
-        MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
+    MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
     allMarkers.add(mapMarker);
     _setTapGestureHandler();
     hereMapController.mapScene.addMapMarker(mapMarker);
   }
 
-  void animateMarker(MapMarker marker, GeoCoordinates targetCoordinates,
-      {required int durationMs}) {
+  void animateMarker(MapMarker marker, GeoCoordinates targetCoordinates, {required int durationMs}) {
     const stepDurationMs = 50;
     var steps = (durationMs / stepDurationMs).round();
 
-    var latDiff =
-        (targetCoordinates.latitude - marker.coordinates.latitude) / steps;
-    var lonDiff =
-        (targetCoordinates.longitude - marker.coordinates.longitude) / steps;
+    var latDiff = (targetCoordinates.latitude - marker.coordinates.latitude) / steps;
+    var lonDiff = (targetCoordinates.longitude - marker.coordinates.longitude) / steps;
 
     var currentStep = 0;
 
@@ -657,8 +589,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _pickMapMarker(Point2D touchPoint) {
     double radiusInPixel = 2;
-    _hereMapController.pickMapItems(touchPoint, radiusInPixel,
-        (pickMapItemsResult) {
+    _hereMapController.pickMapItems(touchPoint, radiusInPixel, (pickMapItemsResult) {
       if (pickMapItemsResult == null) {
         // Pick operation failed.
         return;
@@ -680,19 +611,12 @@ class _MapScreenState extends State<MapScreen> {
       var coordinates = topmostMapMarker.coordinates;
       var selected;
       for (var order in orders) {
-        if (order.sourceLatitude == coordinates.latitude &&
-            order.sourceLongitude == coordinates.longitude) {
+        if (order.sourceLatitude == coordinates.latitude && order.sourceLongitude == coordinates.longitude) {
           selected = order;
           break;
         }
       }
-      _markerPopup(
-          selected.sourceName,
-          selected.name,
-          selected.imageUrl,
-          selected.quantity.toString(),
-          selected.price.toString(),
-          selected.status);
+      _markerPopup(selected.sourceName, selected.name, selected.imageUrl, selected.quantity.toString(), selected.price.toString(), selected.status);
     });
   }
 
