@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:here_hackathon/logic/models/rider_model.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:here_hackathon/utils/const.dart';
 import 'package:here_hackathon/utils/typography.dart';
@@ -47,6 +49,7 @@ class _MapScreenState extends State<MapScreen> {
   FlutterTts flutterTts = FlutterTts();
   TtsState ttsState = TtsState.stopped;
   var orders;
+  var riders;
   List<rout.Waypoint> waypoints = [];
 
   @override
@@ -64,6 +67,7 @@ class _MapScreenState extends State<MapScreen> {
     }
     //myLoc();
     orders = context.read<OrderStore>().orders.values.toList();
+    riders = context.read<OrderStore>().riders.values.toList();
   }
 
   Future _speak(String text) async {
@@ -107,6 +111,12 @@ class _MapScreenState extends State<MapScreen> {
               // longit = mylongit + Random().nextDouble() * 0.1 - 0.005;
               // addMarker(_hereMapController, latit, longit,
               //     "assets/images/ecoeatspin.png");
+              logger.d(allMarkers[2].coordinates.latitude);
+              animateMarker(
+                  allMarkers[0],
+                  GeoCoordinates(allMarkers[2].coordinates.latitude,
+                      allMarkers[2].coordinates.longitude),
+                  durationMs: 10000);
             },
           ),
           FloatingActionButton.small(
@@ -540,12 +550,16 @@ class _MapScreenState extends State<MapScreen> {
           MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
       hereMapController.camera.lookAtPointWithMeasure(
           GeoCoordinates(latitude, longitude), mapMeasureZoom);
-      // hereMapController.mapScene.enableFeatures(
-      //     {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      hereMapController.mapScene.enableFeatures(
+          {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
       hereMapController.mapScene.enableFeatures(
           {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
     myLoc();
+    for (RiderModel rider in riders) {
+      addMarker(_hereMapController, rider.currentLatitude,
+          rider.currentLongitude, "assets/images/rider.png");
+    }
     for (var order in orders) {
       addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude,
           "assets/images/food.png");
@@ -591,6 +605,8 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  List allMarkers = [];
+
   void addMarker(HereMapController hereMapController, double lati, double longi,
       String logo) {
     logger.d("Add markers");
@@ -599,8 +615,38 @@ class _MapScreenState extends State<MapScreen> {
     MapImage mapImage =
         MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
+    allMarkers.add(mapMarker);
     _setTapGestureHandler();
     hereMapController.mapScene.addMapMarker(mapMarker);
+  }
+
+  void animateMarker(MapMarker marker, GeoCoordinates targetCoordinates,
+      {required int durationMs}) {
+    const stepDurationMs = 50;
+    var steps = (durationMs / stepDurationMs).round();
+
+    var latDiff =
+        (targetCoordinates.latitude - marker.coordinates.latitude) / steps;
+    var lonDiff =
+        (targetCoordinates.longitude - marker.coordinates.longitude) / steps;
+
+    var currentStep = 0;
+
+    Timer.periodic(Duration(milliseconds: stepDurationMs), (timer) {
+      if (currentStep >= steps) {
+        timer.cancel();
+        return;
+      }
+
+      var newLat = marker.coordinates.latitude + latDiff;
+      var newLon = marker.coordinates.longitude + lonDiff;
+
+      marker.coordinates = GeoCoordinates(newLat, newLon);
+      _hereMapController.mapScene.removeMapMarker(marker);
+      _hereMapController.mapScene.addMapMarker(marker);
+
+      currentStep++;
+    });
   }
 
   void _setTapGestureHandler() {
