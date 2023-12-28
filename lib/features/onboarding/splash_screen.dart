@@ -20,7 +20,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -57,11 +58,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     if (context.read<AuthStore>().isAuthenticated) {
       if (context.mounted) {
-        AutoRouter.of(context).replace(const MainScaffoldRoute());
+        AutoRouter.of(context).replace(const OnboardingRoute());
       }
     } else {
       if (context.mounted) {
-        AutoRouter.of(context).replace(LoginRoute());
+        AutoRouter.of(context).replace(const OnboardingRoute());
       }
     }
   }
@@ -75,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Center(
         child: ScaleTransition(
           scale: _animation,
@@ -83,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image(
-                image: const AssetImage('assets/images/ecoeats.png'),
+                image: const AssetImage('assets/images/eco_eats_dark.png'),
                 width: MediaQuery.of(context).size.width,
               ),
             ],
