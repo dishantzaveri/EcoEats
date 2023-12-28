@@ -44,6 +44,7 @@ class OrderStore extends ChangeNotifier {
   Map<String, OrderModel> orders = {};
 
   Future<void> fetchOrderData() async {
+    orders.clear();
     // Get the specific document from the Firestore collection.
     List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
         .collection('orders')
@@ -61,7 +62,7 @@ class OrderStore extends ChangeNotifier {
 
       orders.addEntries([MapEntry(x.id, order)]);
     }
-    // logger.d('orders: $orders');
+    logger.d('orders: $orders');
   }
 
   Map<String, ShopModel> shops = {};
