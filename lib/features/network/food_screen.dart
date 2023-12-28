@@ -1,7 +1,8 @@
-import 'dart:async';
+import 'dart:math';
 
+import 'package:carousel_indicator/carousel_indicator.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:here_hackathon/utils/const.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class FoodScreen extends StatefulWidget {
@@ -12,25 +13,13 @@ class FoodScreen extends StatefulWidget {
 }
 
 class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  int displayedText = 0;
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    startAnimation();
   }
 
-  void startAnimation() {
-    Timer.periodic(const Duration(seconds: 2), (timer) {
-      setState(() {
-        logger.d("$displayedText");
-        displayedText++;
-        displayedText = displayedText % 3;
-      });
-    });
-  }
+  final CarouselController _controller = CarouselController();
+  int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +50,7 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
                         children: [
                           const Text("Search for ", style: TextStyle(color: Colors.black)),
                           TextAnimatorSequence(
-                            tapToProceed: true,
+                            // tapToProceed: true,
                             loop: true,
                             transitionTime: const Duration(seconds: 1),
                             children: [
@@ -127,7 +116,83 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
             ),
           ];
         },
-        body: const Column(),
+        body: Column(
+          children: [
+            const SizedBox(height: 20),
+            CarouselSlider(
+              carouselController: _controller,
+              options: CarouselOptions(
+                height: 150,
+                autoPlay: true,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.3,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    pageIndex = index;
+                  });
+                },
+              ),
+              items: [1, 2, 3, 4, 5].map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      child: Image.network("https://source.unsplash.com/random/400x200?sig=${Random().nextInt(100)}"),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            CarouselIndicator(
+              count: 5,
+              index: pageIndex,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  direction: Axis.vertical,
+                  children: [
+                    SizedBox(width: 20, height: 60),
+                    SizedBox(width: 20, height: 60),
+                    for (int index = 0; index < 7; index++) ...[
+                      Container(
+                        height: 60,
+                        width: 60,
+                        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: SizedBox(
+                                height: 20,
+                                width: 40,
+                                child: Image.asset(
+                                  "assets/foods/${index + 1}.png",
+                                  fit: BoxFit.fitWidth,
+                                  height: 40,
+                                  width: 40,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }
