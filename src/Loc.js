@@ -1,10 +1,8 @@
-import Map from './Maps';
-import React, { useState } from 'react';
-import RestaurantList from './RestaurantList';
-const apikey = 'cuj0o7HVeJ7R6ylDkWbuOw7MSUZlwS4cM-2CgRuVa-4'
-// Austurvöllur square in Reykjavik
+import Map from "./Maps";
+import React, { useState } from "react";
+import RestaurantList from "./RestaurantList";
+const apikey = "cuj0o7HVeJ7R6ylDkWbuOw7MSUZlwS4cM-2CgRuVa-4";
 const userPosition = { lat: 64.1472, lng: -21.9398 };
-// Austurvöllur square in Reykjavik
 const restaurantList = [
   {
     name: "The Fish Market",
@@ -23,8 +21,6 @@ const restaurantList = [
     location: { lat: 64.1494, lng: -21.9337 },
   },
 ];
-
-
 
 function Loc() {
   const [restaurantPosition, setRestaurantPosition] = useState(null);

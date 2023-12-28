@@ -22,38 +22,44 @@ const TestimonialSlider = () => {
     <Slider {...settings}>
       <div>
         <p className="review__text">
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-          atque, quam minus totam maiores laborum! Impedit consectetur illum
-          aliquid odit. Odit dolore ipsum quod debitis nostrum necessitatibus
-          quis dolorem quas!"
+          "Since discovering Eco Eats, our family dinners have transformed. The
+          quality of ingredients is top-notch, and knowing that we're eating
+          sustainably makes every meal feel special. Plus, the eco-friendly
+          packaging is a huge bonus for us as we strive to reduce our
+          environmental footprint. We're not just enjoying great food; we're
+          part of a meaningful cause."
         </p>
         <div className=" slider__content d-flex align-items-center gap-3 ">
           <img src={ava01} alt="avatar" className=" rounded" />
-          <h6>Jhon Doe</h6>
+          <h6>Vividha Jagtap</h6>
         </div>
       </div>
       <div>
         <p className="review__text">
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-          atque, quam minus totam maiores laborum! Impedit consectetur illum
-          aliquid odit. Odit dolore ipsum quod debitis nostrum necessitatibus
-          quis dolorem quas!"
+          "As someone with a busy lifestyle, finding time to cook healthy meals
+          was always a struggle. Eco Eats has been a lifesaver with their quick
+          and efficient delivery service. The fact that they focus on reducing
+          carbon emissions with optimized delivery routes makes me feel good
+          about my choice. It's rare to find a service that's fast, reliable,
+          and genuinely committed to sustainability."
         </p>
         <div className="slider__content d-flex align-items-center gap-3 ">
           <img src={ava02} alt="avatar" className=" rounded" />
-          <h6>Mitchell Marsh</h6>
+          <h6>Dishant Zaveri</h6>
         </div>
       </div>
       <div>
         <p className="review__text">
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-          atque, quam minus totam maiores laborum! Impedit consectetur illum
-          aliquid odit. Odit dolore ipsum quod debitis nostrum necessitatibus
-          quis dolorem quas!"
+          "What I love about Eco Eats is the sense of community they foster.
+          It's not just about delivering food; it’s about supporting local
+          farmers and giving back to environmental causes. Their commitment to
+          sustainability and community support really shines through in
+          everything they do. Each order feels like I'm contributing to a
+          larger, positive impact."
         </p>
         <div className="slider__content d-flex align-items-center gap-3 ">
           <img src={ava03} alt="avatar" className=" rounded" />
-          <h6>Steven Crock</h6>
+          <h6>Palak Uppal</h6>
         </div>
       </div>
     </Slider>

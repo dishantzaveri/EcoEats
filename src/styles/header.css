@@ -10,7 +10,7 @@
 .logo img {
   width: calc(100% - 20%);
   object-fit: contain;
-  margin-top: -20px;
+  margin-top: -40px;
   margin-left: -170px;
   margin-right: -100px;
 }

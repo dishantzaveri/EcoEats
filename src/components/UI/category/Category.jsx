@@ -4,7 +4,7 @@ import { Container, Row, Col } from "reactstrap";
 
 import categoryImg01 from "../../../assets/images/category-01.png";
 import categoryImg02 from "../../../assets/images/instamart.png";
-import categoryImg03 from "../../../assets/images/category-03.png";
+import categoryImg03 from "../../../assets/images/genie.png";
 import categoryImg04 from "../../../assets/images/category-04.png";
 
 import "../../../styles/category.css";
@@ -20,12 +20,12 @@ const categoryData = [
   },
 
   {
-    display: "Asian Food",
+    display: "Genie",
     imgUrl: categoryImg03,
   },
 
   {
-    display: "Row Meat",
+    display: "Connect",
     imgUrl: categoryImg04,
   },
 ];

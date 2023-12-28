@@ -10,7 +10,7 @@ import Contact from "../pages/Contact";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Location from "../pages/Location";
-import Loc from "../LOC.JS";
+import Loc from "../Loc";
 
 const Routers = () => {
   return (

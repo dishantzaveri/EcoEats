@@ -25,6 +25,7 @@ import foodCategoryImg03 from "../assets/images/bread.png";
 import ProductCard from "../components/UI/product-card/ProductCard.jsx";
 
 import whyImg from "../assets/images/location.png";
+import whyImg2 from "../assets/images/fooddel.png";
 
 import networkImg from "../assets/images/network.png";
 
@@ -34,18 +35,18 @@ const featureData = [
   {
     title: "Quick Delivery",
     imgUrl: featureImg01,
-    desc: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minus, doloremque.",
+    desc: "Speedy service, right to your doorstep!",
   },
 
   {
-    title: "Super Dine In",
+    title: "Connect",
     imgUrl: featureImg02,
-    desc: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minus, doloremque.",
+    desc: "Bridging distances, connecting hearts.",
   },
   {
-    title: "Easy Pick Up",
+    title: "Easy Pick and Drop",
     imgUrl: featureImg03,
-    desc: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minus, doloremque.",
+    desc: "Simplifying your life with hassle-free pick-up and delivery.",
   },
 ];
 
@@ -100,18 +101,20 @@ const Home = () => {
               <div className="hero__content  ">
                 <h5 className="mb-3">Convenient . Sustainable . Fast</h5>
                 <h1 className="mb-4 hero__title">
-                  <span>Want something?</span> Just wait! <br /> serving at
-                  <span> your doorstep</span>
+                  Quick Needs
+                  <br />
+                  <span> Quicker Deliveries</span>
                 </h1>
 
                 <p>
-                  Experience fastest product delivery service with no minimum
-                  order & GPS tracking.
+                  Experience fastest product delivery service right at your
+                  doorstep with no minimum order & GPS tracking.
                 </p>
 
                 <div className="hero__btns d-flex align-items-center gap-5 mt-4">
                   <button className="order__btn d-flex align-items-center justify-content-between">
-                    Order now <i class="ri-arrow-right-s-line"></i>
+                    <Link to="/loc">Order Now</Link>
+                    <i class="ri-arrow-right-s-line"></i>
                   </button>
 
                   <button className="all__foods-btn">
@@ -122,14 +125,20 @@ const Home = () => {
                 <div className=" hero__service  d-flex align-items-center gap-5 mt-5 ">
                   <p className=" d-flex align-items-center gap-2 ">
                     <span className="shipping__icon">
-                      <i class="ri-car-line"></i>
+                      <i
+                        class="ri-car-line"
+                        style={{ background: "#F5BD1D" }}
+                      ></i>
                     </span>{" "}
                     No shipping charge
                   </p>
 
                   <p className=" d-flex align-items-center gap-2 ">
                     <span className="shipping__icon">
-                      <i class="ri-shield-check-line"></i>
+                      <i
+                        class="ri-shield-check-line"
+                        style={{ background: "green" }}
+                      ></i>
                     </span>{" "}
                     100% secure checkout
                   </p>
@@ -154,18 +163,18 @@ const Home = () => {
         <Container>
           <Row>
             <Col lg="12" className="text-center">
-              <h5 className="feature__subtitle mb-4">What we serve</h5>
-              <h2 className="feature__title">Just sit back at home</h2>
+              <h5 className="feature__subtitle mb-4">What we offer</h5>
+              <h2 className="feature__title">Relax at Home, We've Got Your</h2>
               <h2 className="feature__title">
-                we will <span>take care</span>
+                Deliveries <span>Covered</span>
               </h2>
               <p className="mb-1 mt-4 feature__text">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor,
-                officiis?
+                Trust in our sustainable approach to handling every detail with
+                care and precision.
               </p>
               <p className="feature__text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Aperiam, eius.{" "}
+                We're committed not only to delivering your products but also to
+                ensuring a sustainable future.
               </p>
             </Col>
 
@@ -186,7 +195,7 @@ const Home = () => {
         </Container>
       </section>
 
-      <section>
+      {/* <section>
         <Container>
           <Row>
             <Col lg="12" className="text-center">
@@ -242,13 +251,13 @@ const Home = () => {
             ))}
           </Row>
         </Container>
-      </section>
+      </section> */}
 
       <section className="why__choose-us">
         <Container>
           <Row>
             <Col lg="6" md="6">
-              <img src={whyImg} alt="why-tasty-treat" className="w-100" />
+              <img src={whyImg2} alt="why-tasty-treat" className="w-100" />
             </Col>
 
             <Col lg="6" md="6">
@@ -257,42 +266,54 @@ const Home = () => {
                   Why <span>Eco Eats?</span>
                 </h2>
                 <p className="tasty__treat-desc">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Dolorum, minus. Tempora reprehenderit a corporis velit,
-                  laboriosam vitae ullam, repellat illo sequi odio esse iste
-                  fugiat dolor, optio incidunt eligendi deleniti!
+                  At Eco Eats, we believe in more than just delivering food; we
+                  believe in nourishing both our community and our planet. Our
+                  mission is to provide you with delicious meals in a way that’s
+                  both environmentally responsible and socially beneficial.
                 </p>
 
                 <ListGroup className="mt-4">
                   <ListGroupItem className="border-0 ps-0">
                     <p className=" choose__us-title d-flex align-items-center gap-2 ">
-                      <i class="ri-checkbox-circle-line"></i> Fresh and tasty
-                      foods
+                      <i
+                        class="ri-checkbox-circle-line"
+                        style={{ color: "green" }}
+                      ></i>{" "}
+                      Sustainable Sourcing
                     </p>
                     <p className="choose__us-desc">
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                      Quia, voluptatibus.
+                      We partner exclusively with local farmers and suppliers
+                      who practice sustainable agriculture. This not only
+                      supports local economies but also reduces the carbon
+                      footprint associated with long-distance food transport.
                     </p>
                   </ListGroupItem>
 
                   <ListGroupItem className="border-0 ps-0">
                     <p className="choose__us-title d-flex align-items-center gap-2 ">
-                      <i class="ri-checkbox-circle-line"></i> Quality support
+                      <i
+                        class="ri-checkbox-circle-line"
+                        style={{ color: "green" }}
+                      ></i>{" "}
+                      Faster Delivery
                     </p>
                     <p className="choose__us-desc">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Qui, earum.
+                      Using advanced mapping for optimised routes and
+                      eco-friendly deliveries.
                     </p>
                   </ListGroupItem>
 
                   <ListGroupItem className="border-0 ps-0">
                     <p className="choose__us-title d-flex align-items-center gap-2 ">
-                      <i class="ri-checkbox-circle-line"></i>Order from any
-                      location{" "}
+                      <i
+                        class="ri-checkbox-circle-line"
+                        style={{ color: "green" }}
+                      ></i>
+                      Customized Meal Plans{" "}
                     </p>
                     <p className="choose__us-desc">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Qui, earum.
+                      Providing personalized meal options based on dietary
+                      preferences and nutritional needs.
                     </p>
                   </ListGroupItem>
                 </ListGroup>
@@ -302,7 +323,7 @@ const Home = () => {
         </Container>
       </section>
 
-      <section className="pt-0">
+      {/* <section className="pt-0">
         <Container>
           <Row>
             <Col lg="12" className="text-center mb-5 ">
@@ -316,7 +337,7 @@ const Home = () => {
             ))}
           </Row>
         </Container>
-      </section>
+      </section> */}
 
       <section>
         <Container>
@@ -327,12 +348,7 @@ const Home = () => {
                 <h2 className="testimonial__title mb-4">
                   What our <span>customers</span> are saying
                 </h2>
-                <p className="testimonial__desc">
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Distinctio quasi qui minus quos sit perspiciatis inventore
-                  quis provident placeat fugiat!
-                </p>
-
+                {/* <p className="testimonial__desc"></p> */}
                 <TestimonialSlider />
               </div>
             </Col>
