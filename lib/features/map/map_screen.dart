@@ -3,9 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:here_hackathon/utils/const.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
+import 'package:here_sdk/gestures.dart';
 import 'package:here_sdk/location.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:here_sdk/navigation.dart' as nav;
@@ -17,7 +20,6 @@ import 'package:here_sdk/animation.dart' as anim;
 import '../../logic/stores/location_store.dart';
 import '../../utils/palette.dart';
 import 'CustomMapStyleExample.dart';
-import 'RoutingExample.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -25,6 +27,8 @@ class MapScreen extends StatefulWidget {
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
+
+enum TtsState { playing, stopped, paused, continued }
 
 class _MapScreenState extends State<MapScreen> {
   late final HereMapController _hereMapController;
@@ -38,6 +42,10 @@ class _MapScreenState extends State<MapScreen> {
   List<MapPolyline> _mapPolylines = [];
   nav.VisualNavigator? _visualNavigator;
   nav.LocationSimulator? _locationSimulator;
+  late rout.Route route;
+  bool isNavigating = false;
+  FlutterTts flutterTts = FlutterTts();
+  TtsState ttsState = TtsState.stopped;
 
   @override
   void initState() {
@@ -53,7 +61,20 @@ class _MapScreenState extends State<MapScreen> {
       throw ("Initialization of RoutingEngine failed.");
     }
     //myLoc();
+    logger.d(context.read<OrderStore>().riders);
   }
+
+  Future _speak(String text) async {
+    var result = await flutterTts.speak(text);
+    if (result == 1) setState(() => ttsState = TtsState.playing);
+  }
+
+  @override
+  // void dispose() {
+  //   // Free HERE SDK resources before the application shuts down.
+  //   SdkContext.release();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +101,8 @@ class _MapScreenState extends State<MapScreen> {
             heroTag: null,
             child: const Icon(Icons.edit),
             onPressed: () {
-              latit = 19.0760 + Random().nextDouble() * 0.1 - 0.005;
-              longit = 72.8777 + Random().nextDouble() * 0.1 - 0.005;
+              latit = mylatit + Random().nextDouble() * 0.1 - 0.005;
+              longit = mylongit + Random().nextDouble() * 0.1 - 0.005;
               addMarker(_hereMapController, latit, longit,
                   "assets/images/ecoeatspin.png");
             },
@@ -98,6 +119,19 @@ class _MapScreenState extends State<MapScreen> {
             child: const Icon(Icons.route),
             onPressed: () {
               addRoute();
+            },
+          ),
+          FloatingActionButton.small(
+            heroTag: null,
+            child: const Icon(Icons.navigation),
+            onPressed: () async {
+              isNavigating
+                  ? _visualNavigator!.stopRendering()
+                  : _startGuidance(route);
+              setState(() {
+                isNavigating = !isNavigating;
+              });
+              //await _speak();
             },
           ),
         ],
@@ -119,8 +153,9 @@ class _MapScreenState extends State<MapScreen> {
     // Hook in one of the many listeners. Here we set up a listener to get instructions on the maneuvers to take while driving.
     // For more details, please check the "navigation_app" example and the Developer's Guide.
     _visualNavigator!.maneuverNotificationListener =
-        nav.ManeuverNotificationListener((String maneuverText) {
-      print("ManeuverNotifications: $maneuverText");
+        nav.ManeuverNotificationListener((String maneuverText) async {
+      logger.d("ManeuverNotifications: $maneuverText");
+      await _speak(maneuverText);
     });
 
     // Set a route to follow. This leaves tracking mode.
@@ -225,16 +260,17 @@ class _MapScreenState extends State<MapScreen> {
         "assets/images/ecoeatspin.png");
     var waypoint2 = rout.Waypoint.withDefaults(w2);
 
-    List<rout.Waypoint> waypoints = [
+    List<rout.Waypoint> initailPoints = [
       startWaypoint,
       // waypoint1,
       // waypoint2,
       destinationWaypoint
     ];
 
+    List<rout.Waypoint> waypoints = [waypoint1, waypoint2, destinationWaypoint];
     List<rout.Waypoint> selectedWaypoints = [startWaypoint];
 
-    _routingEngine.calculateCarRoute(waypoints, rout.CarOptions(),
+    _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(),
         (rout.RoutingError? routingError,
             List<rout.Route>? initialRouteList) async {
       if (routingError == null) {
@@ -266,7 +302,9 @@ class _MapScreenState extends State<MapScreen> {
                 _showRouteDetails(candidateRoute);
                 _showRouteOnMap(candidateRoute);
                 _logRouteViolations(candidateRoute);
-                //_showDialog("Navigation", "Start Navigation")
+                setState(() {
+                  route = candidateRoute;
+                });
                 //_startGuidance(candidateRoute);
               }
             }
@@ -502,7 +540,47 @@ class _MapScreenState extends State<MapScreen> {
     MapImage mapImage =
         MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
+    _setTapGestureHandler();
     hereMapController.mapScene.addMapMarker(mapMarker);
+  }
+
+  void _setTapGestureHandler() {
+    _hereMapController.gestures.tapListener = TapListener((Point2D touchPoint) {
+      _pickMapMarker(touchPoint);
+    });
+  }
+
+  void _pickMapMarker(Point2D touchPoint) {
+    double radiusInPixel = 2;
+    _hereMapController.pickMapItems(touchPoint, radiusInPixel,
+        (pickMapItemsResult) {
+      if (pickMapItemsResult == null) {
+        // Pick operation failed.
+        return;
+      }
+
+      // Note that MapMarker items contained in a cluster are not part of pickMapItemsResult.markers.
+      //_handlePickedMapMarkerClusters(pickMapItemsResult);
+
+      // Note that 3D map markers can't be picked yet. Only marker, polgon and polyline map items are pickable.
+      List<MapMarker> mapMarkerList = pickMapItemsResult.markers;
+      int listLength = mapMarkerList.length;
+      if (listLength == 0) {
+        print("No map markers found.");
+        return;
+      }
+
+      MapMarker topmostMapMarker = mapMarkerList.first;
+      Metadata? metadata = topmostMapMarker.metadata;
+      if (metadata != null) {
+        String message = metadata.getString("key_poi") ?? "No message found.";
+
+        _showDialog("Map Marker picked", message);
+        return;
+      }
+
+      _showDialog("Map Marker picked", "No metadata attached.");
+    });
   }
 
   Widget _createWidget(String label, Color backgroundColor) {

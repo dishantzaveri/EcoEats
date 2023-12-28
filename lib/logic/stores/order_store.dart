@@ -45,7 +45,10 @@ class OrderStore extends ChangeNotifier {
 
   Future<void> fetchOrderData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('orders').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .get()
+        .then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {
@@ -58,14 +61,17 @@ class OrderStore extends ChangeNotifier {
 
       orders.addEntries([MapEntry(x.id, order)]);
     }
-    logger.d('orders: $orders');
+    // logger.d('orders: $orders');
   }
 
   Map<String, ShopModel> shops = {};
 
   Future<void> fetchShopData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('shops').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
+        .collection('shops')
+        .get()
+        .then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {
@@ -78,14 +84,17 @@ class OrderStore extends ChangeNotifier {
 
       shops.addEntries([MapEntry(x.id, shop)]);
     }
-    logger.d('shops: $shops');
+    //logger.d('shops: $shops');
   }
 
   Map<String, RiderModel> riders = {};
 
   Future<void> fetchRiderData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('riders').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
+        .collection('riders')
+        .get()
+        .then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {
@@ -98,14 +107,17 @@ class OrderStore extends ChangeNotifier {
 
       riders.addEntries([MapEntry(x.id, rider)]);
     }
-    logger.d('riders: $riders');
+    //logger.d('riders: $riders');
   }
 
   Map<String, AccessoryModel> accessories = {};
 
   Future<void> fetchAccessoryData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('accessory').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
+        .collection('accessory')
+        .get()
+        .then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {
@@ -118,14 +130,17 @@ class OrderStore extends ChangeNotifier {
 
       accessories.addEntries([MapEntry(x.id, accessory)]);
     }
-    logger.d('accessories: $accessories');
+    // logger.d('accessories: $accessories');
   }
 
   Map<String, UserModel> users = {};
 
   Future<void> fetchUserData() async {
     // Get the specific document from the Firestore collection.
-    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance.collection('user').get().then((value) => value.docs);
+    List<DocumentSnapshot> docSnapshot = await FirebaseFirestore.instance
+        .collection('user')
+        .get()
+        .then((value) => value.docs);
 
     // Check if the document exists and return its data.
     for (var x in docSnapshot) {
@@ -138,6 +153,6 @@ class OrderStore extends ChangeNotifier {
 
       users.addEntries([MapEntry(x.id, user)]);
     }
-    logger.d('users: $users');
+    // logger.d('users: $users');
   }
 }
