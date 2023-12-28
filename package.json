@@ -5,6 +5,7 @@
   "dependencies": {
     "@alan-ai/alan-sdk-web": "^1.8.54",
     "@here/maps-api-for-javascript": "^1.49.1",
+    "@react-google-maps/api": "^2.19.2",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
