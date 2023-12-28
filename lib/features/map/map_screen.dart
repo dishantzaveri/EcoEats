@@ -89,7 +89,7 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         openButtonBuilder: RotateFloatingActionButtonBuilder(
-          child: const Icon(Icons.add),
+          child: Image.asset("assets/images/eco_eat_dark.png"),
           fabSize: ExpandableFabSize.regular,
           foregroundColor: Palette.secondary,
           backgroundColor: Palette.primary,

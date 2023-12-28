@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
 import 'package:here_hackathon/logic/stores/location_store.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:provider/provider.dart';
@@ -63,7 +62,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           PageView(
@@ -74,12 +73,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/onboarding1.png',
+                      'assets/images/location.png',
                       height: 350,
                       width: 350,
                     ),
                     Text(
-                      "Dating made easy",
+                      "Delivery made easy",
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -90,8 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text("Filtered people based on your interests",
-                        style: GoogleFonts.lato()),
+                    Text("", style: GoogleFonts.lato()),
                   ],
                 ),
               ),
@@ -105,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: 350,
                     ),
                     Text(
-                      "Dating made quick",
+                      "Delivery made quick",
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -117,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       height: 20,
                     ),
                     Text(
-                        "You have 24 hours to chat, its a blind date after all!",
+                        "Sustainable and Eco-friendly delivery at your doorstep",
                         style: GoogleFonts.lato()),
                   ],
                 ),
@@ -132,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: 350,
                     ),
                     Text(
-                      "Dating made safe",
+                      "Delivery is your hero",
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -143,7 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text("Leave your worries aside and find love <3",
+                    Text("Reduce your carbon footprint",
                         style: GoogleFonts.lato()),
                   ],
                 ),
@@ -197,9 +195,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             : handleNavigation();
                       });
                     },
-                    child: currentPage != 2
+                    child: currentPage != 3
                         ? const Text('    Next',
-                            style: TextStyle(color: Colors.black))
+                            style: TextStyle(color: Colors.white))
                         : Image.asset("assets/images/location.png",
                             height: MediaQuery.of(context).size.width * 0.06)),
                 //SizedBox(height: 24)
