@@ -6,6 +6,7 @@ import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:here_hackathon/utils/const.dart';
+import 'package:here_hackathon/utils/typography.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/gestures.dart';
@@ -37,7 +38,6 @@ class _MapScreenState extends State<MapScreen> {
   late LocationEngine _locationEngine;
   late LocationIndicator _locationIndicator;
   late rout.RoutingEngine _routingEngine;
-  late double latit, longit;
   late double mylongit, mylatit;
   List<MapPolyline> _mapPolylines = [];
   nav.VisualNavigator? _visualNavigator;
@@ -46,6 +46,8 @@ class _MapScreenState extends State<MapScreen> {
   bool isNavigating = false;
   FlutterTts flutterTts = FlutterTts();
   TtsState ttsState = TtsState.stopped;
+  var orders;
+  List<rout.Waypoint> waypoints = [];
 
   @override
   void initState() {
@@ -61,7 +63,7 @@ class _MapScreenState extends State<MapScreen> {
       throw ("Initialization of RoutingEngine failed.");
     }
     //myLoc();
-    logger.d(context.read<OrderStore>().riders);
+    orders = context.read<OrderStore>().orders.values.toList();
   }
 
   Future _speak(String text) async {
@@ -101,10 +103,10 @@ class _MapScreenState extends State<MapScreen> {
             heroTag: null,
             child: const Icon(Icons.edit),
             onPressed: () {
-              latit = mylatit + Random().nextDouble() * 0.1 - 0.005;
-              longit = mylongit + Random().nextDouble() * 0.1 - 0.005;
-              addMarker(_hereMapController, latit, longit,
-                  "assets/images/ecoeatspin.png");
+              // latit = mylatit + Random().nextDouble() * 0.1 - 0.005;
+              // longit = mylongit + Random().nextDouble() * 0.1 - 0.005;
+              // addMarker(_hereMapController, latit, longit,
+              //     "assets/images/ecoeatspin.png");
             },
           ),
           FloatingActionButton.small(
@@ -128,6 +130,7 @@ class _MapScreenState extends State<MapScreen> {
               isNavigating
                   ? _visualNavigator!.stopRendering()
                   : _startGuidance(route);
+              isNavigating ? null : flutterTts.stop();
               setState(() {
                 isNavigating = !isNavigating;
               });
@@ -243,22 +246,11 @@ class _MapScreenState extends State<MapScreen> {
     rout.TaxiOptions
   ];
   Future<void> addRoute() async {
-    logger.d("Calculating ${options[i]} route.");
     var startGeoCoordinates = GeoCoordinates(mylatit, mylongit);
-    var destinationGeoCoordinates = GeoCoordinates(latit, longit);
-    logger.d("$mylatit + $mylongit + $latit + $longit");
+    //var destinationGeoCoordinates = GeoCoordinates(latit, longit);
     var startWaypoint = rout.Waypoint.withDefaults(startGeoCoordinates);
-    var destinationWaypoint =
-        rout.Waypoint.withDefaults(destinationGeoCoordinates);
-
-    var w1 = _createRandomGeoCoordinatesInViewport();
-    addMarker(_hereMapController, w1.latitude, w1.longitude,
-        "assets/images/ecoeatspin.png");
-    var waypoint1 = rout.Waypoint.withDefaults(w1);
-    var w2 = _createRandomGeoCoordinatesInViewport();
-    addMarker(_hereMapController, w2.latitude, w2.longitude,
-        "assets/images/ecoeatspin.png");
-    var waypoint2 = rout.Waypoint.withDefaults(w2);
+    var destinationWaypoint = rout.Waypoint.withDefaults(GeoCoordinates(
+        orders[3].destinationLatitude, orders[3].destinationLongitude));
 
     List<rout.Waypoint> initailPoints = [
       startWaypoint,
@@ -267,8 +259,9 @@ class _MapScreenState extends State<MapScreen> {
       destinationWaypoint
     ];
 
-    List<rout.Waypoint> waypoints = [waypoint1, waypoint2, destinationWaypoint];
+    waypoints.add(destinationWaypoint);
     List<rout.Waypoint> selectedWaypoints = [startWaypoint];
+    rout.Route candidateRoute;
 
     _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(),
         (rout.RoutingError? routingError,
@@ -287,7 +280,7 @@ class _MapScreenState extends State<MapScreen> {
                   (rout.RoutingError? routingError,
                       List<rout.Route>? routeList) async {
             if (routingError == null) {
-              rout.Route candidateRoute = routeList!.first;
+              candidateRoute = routeList!.first;
               double candidateDistance =
                   candidateRoute.lengthInMeters.toDouble();
 
@@ -298,10 +291,10 @@ class _MapScreenState extends State<MapScreen> {
                 selectedWaypoints.add(waypoint);
 
                 // Update the map and visualization as needed.
-                _animateToRoute(candidateRoute);
-                _showRouteDetails(candidateRoute);
-                _showRouteOnMap(candidateRoute);
-                _logRouteViolations(candidateRoute);
+                // _animateToRoute(candidateRoute);
+                // _showRouteDetails(candidateRoute);
+                // _showRouteOnMap(candidateRoute);
+                // _logRouteViolations(candidateRoute);
                 setState(() {
                   route = candidateRoute;
                 });
@@ -310,12 +303,10 @@ class _MapScreenState extends State<MapScreen> {
             }
           });
         }
-        // rout.Route route = routeList!.first;
-        // _animateToRoute(route);
-        // _showRouteDetails(route);
-        // _showRouteOnMap(route);
-        // _logRouteViolations(route);
-        // _startGuidance(route);
+        _animateToRoute(route);
+        _showRouteDetails(route);
+        _showRouteOnMap(route);
+        _logRouteViolations(route);
       } else {
         var error = routingError.toString();
         _showDialog('Error', 'Error while calculating a route: $error');
@@ -336,6 +327,64 @@ class _MapScreenState extends State<MapScreen> {
             child: ListBody(
               children: <Widget>[
                 Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _markerPopup(String title, String message, String imageUrl,
+      String qty, String price, String status) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          //title: ,
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(title,
+                      style: Typo.headlineMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(message),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text('Quantity: $qty'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text('Price: $price'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text('Status: $status'),
+                ),
               ],
             ),
           ),
@@ -497,6 +546,16 @@ class _MapScreenState extends State<MapScreen> {
           {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
     myLoc();
+    for (var order in orders) {
+      addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude,
+          "assets/images/food.png");
+      addMarker(_hereMapController, order.destinationLatitude,
+          order.destinationLongitude, "assets/images/ecoeatspin.png");
+      // waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
+      //     order.sourceLatitude, order.sourceLongitude)));
+      waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
+          order.destinationLatitude, order.destinationLongitude)));
+    }
   }
 
   void myLoc() {
@@ -572,14 +631,22 @@ class _MapScreenState extends State<MapScreen> {
 
       MapMarker topmostMapMarker = mapMarkerList.first;
       Metadata? metadata = topmostMapMarker.metadata;
-      if (metadata != null) {
-        String message = metadata.getString("key_poi") ?? "No message found.";
-
-        _showDialog("Map Marker picked", message);
-        return;
+      var coordinates = topmostMapMarker.coordinates;
+      var selected;
+      for (var order in orders) {
+        if (order.sourceLatitude == coordinates.latitude &&
+            order.sourceLongitude == coordinates.longitude) {
+          selected = order;
+          break;
+        }
       }
-
-      _showDialog("Map Marker picked", "No metadata attached.");
+      _markerPopup(
+          selected.sourceName,
+          selected.name,
+          selected.imageUrl,
+          selected.quantity.toString(),
+          selected.price.toString(),
+          selected.status);
     });
   }
 
