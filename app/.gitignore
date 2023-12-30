@@ -50,4 +50,3 @@ app.*.map.json
 # exclude all .env files from source control
 *.env
 /lib/utils/env/env.g.dart
-/lib/utils/env/
