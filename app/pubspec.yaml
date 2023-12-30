@@ -1,0 +1,100 @@
+name: here_hackathon
+description: "A new Flutter project."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.3 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  here_sdk:
+    path: plugins/here_sdk_navigate
+
+  # UI and Design
+  cupertino_icons: ^1.0.6
+  cached_network_image: ^3.3.0
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  card_swiper: ^3.0.1
+  flutter_expandable_fab: ^2.0.0
+  smooth_page_indicator: ^1.1.0
+  carousel_slider: ^4.2.1
+  carousel_indicator: ^1.0.6
+
+  # Networking and API
+  dio: ^5.4.0
+  http: ^1.1.2
+
+  # Logging
+  logger: ^2.0.2+1
+
+  # State Management
+  provider: ^6.1.1
+
+  # Data Persistence
+  shared_preferences: ^2.2.2
+  cloud_firestore: ^4.13.6
+
+  # Authentication
+  firebase_auth: ^4.15.3
+  google_sign_in: ^6.2.1
+  google_sign_in_ios: ^5.7.1
+
+  # Firebase
+  firebase_core: ^2.24.2
+
+  # Routing and Navigation
+  auto_route: ^7.8.4
+
+  # Utility
+  url_launcher: ^6.2.2
+  location: ^5.0.3
+  flutter_tts: ^3.8.5
+  envied: ^0.5.2
+
+  # Other
+  widget_and_text_animator: ^1.1.5
+  overlapped_carousel: ^1.0.1
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+  # Code Generation
+  auto_route_generator: ^7.3.2
+  envied_generator: ^0.5.2
+  build_runner: ^2.4.7
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/travel.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/images/travel.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/images/travel.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/travel.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/lotties/
+    - assets/svgs/
+    - assets/map_styles/
+    - assets/foods/
