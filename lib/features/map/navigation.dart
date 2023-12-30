@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2023 HERE Europe B.V.
+ * Copyright (C) 2019-2023 here Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,49 +18,52 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:here_sdk/core.dart' as HERE;
+import 'package:here_sdk/core.dart' as here;
 import 'package:here_sdk/core.engine.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/mapview.dart';
-import 'package:here_sdk/navigation.dart' as HERE;
-import 'package:here_sdk/routing.dart' as HERE;
+import 'package:here_sdk/navigation.dart' as here;
+import 'package:here_sdk/routing.dart' as here;
+
+import '../../utils/const.dart';
 
 void main() {
-  // Usually, you need to initialize the HERE SDK only once during the lifetime of an application.
-  _initializeHERESDK();
+  // Usually, you need to initialize the here SDK only once during the lifetime of an application.
+  _initializehereSDK();
 
   // Ensure that all widgets, including MyApp, have a MaterialLocalizations object available.
-  runApp(MaterialApp(home: MyApp()));
+  runApp(const MaterialApp(home: MyApp()));
 }
 
-void _initializeHERESDK() async {
+void _initializehereSDK() async {
   // Needs to be called before accessing SDKOptions to load necessary libraries.
-  HERE.SdkContext.init(HERE.IsolateOrigin.main);
+  here.SdkContext.init(here.IsolateOrigin.main);
 
-  // Set your credentials for the HERE SDK.
+  // Set your credentials for the here SDK.
   String accessKeyId = "YOUR_ACCESS_KEY_ID";
   String accessKeySecret = "YOUR_ACCESS_KEY_SECRET";
-  SDKOptions sdkOptions =
-      SDKOptions.withAccessKeySecret(accessKeyId, accessKeySecret);
+  SDKOptions sdkOptions = SDKOptions.withAccessKeySecret(accessKeyId, accessKeySecret);
 
   try {
     await SDKNativeEngine.makeSharedInstance(sdkOptions);
   } on InstantiationException {
-    throw Exception("Failed to initialize the HERE SDK.");
+    throw Exception("Failed to initialize the here SDK.");
   }
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   HereMapController? _hereMapController;
 
-  HERE.RoutingEngine? _routingEngine;
-  HERE.VisualNavigator? _visualNavigator;
-  HERE.LocationSimulator? _locationSimulator;
+  here.RoutingEngine? _routingEngine;
+  here.VisualNavigator? _visualNavigator;
+  here.LocationSimulator? _locationSimulator;
 
   Future<bool> _handleBackPress() async {
     // Handle the back press.
@@ -77,7 +80,7 @@ class _MyAppState extends State<MyApp> {
       onWillPop: _handleBackPress,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Navigation QS Example'),
+          title: const Text('Navigation QS Example'),
         ),
         body: Stack(
           children: [
@@ -90,26 +93,22 @@ class _MyAppState extends State<MyApp> {
 
   void _onMapCreated(HereMapController hereMapController) {
     _hereMapController = hereMapController;
-    _hereMapController!.mapScene.loadSceneForMapScheme(MapScheme.normalDay,
-        (MapError? error) {
+    _hereMapController!.mapScene.loadSceneForMapScheme(MapScheme.normalDay, (MapError? error) {
       if (error != null) {
-        print('Map scene not loaded. MapError: ${error.toString()}');
+        logger.d('Map scene not loaded. MapError: ${error.toString()}');
         return;
       }
 
       const double distanceToEarthInMeters = 8000;
-      MapMeasure mapMeasureZoom =
-          MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      _hereMapController!.camera.lookAtPointWithMeasure(
-          HERE.GeoCoordinates(52.520798, 13.409408), mapMeasureZoom);
+      MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
+      _hereMapController!.camera.lookAtPointWithMeasure(here.GeoCoordinates(52.520798, 13.409408), mapMeasureZoom);
 
       _startGuidanceExample();
     });
   }
 
   _startGuidanceExample() {
-    _showDialog("Navigation Quick Start",
-        "This app routes to the HERE office in Berlin. See logs for guidance information.");
+    _showDialog("Navigation Quick Start", "This app routes to the here office in Berlin. See logs for guidance information.");
 
     // We start by calculating a car route.
     _calculateRoute();
@@ -117,34 +116,30 @@ class _MyAppState extends State<MyApp> {
 
   _calculateRoute() {
     try {
-      _routingEngine = HERE.RoutingEngine();
+      _routingEngine = here.RoutingEngine();
     } on InstantiationException {
       throw Exception('Initialization of RoutingEngine failed.');
     }
 
-    HERE.Waypoint startWaypoint =
-        HERE.Waypoint(HERE.GeoCoordinates(52.520798, 13.409408));
-    HERE.Waypoint destinationWaypoint =
-        HERE.Waypoint(HERE.GeoCoordinates(52.530905, 13.385007));
+    here.Waypoint startWaypoint = here.Waypoint(here.GeoCoordinates(52.520798, 13.409408));
+    here.Waypoint destinationWaypoint = here.Waypoint(here.GeoCoordinates(52.530905, 13.385007));
 
-    _routingEngine!.calculateCarRoute(
-        [startWaypoint, destinationWaypoint], HERE.CarOptions(),
-        (HERE.RoutingError? routingError, List<HERE.Route>? routeList) async {
+    _routingEngine!.calculateCarRoute([startWaypoint, destinationWaypoint], here.CarOptions(), (here.RoutingError? routingError, List<here.Route>? routeList) async {
       if (routingError == null) {
         // When error is null, it is guaranteed that the routeList is not empty.
-        HERE.Route _calculatedRoute = routeList!.first;
-        _startGuidance(_calculatedRoute);
+        here.Route calculatedRoute = routeList!.first;
+        _startGuidance(calculatedRoute);
       } else {
         final error = routingError.toString();
-        print('Error while calculating a route: $error');
+        logger.d('Error while calculating a route: $error');
       }
     });
   }
 
-  _startGuidance(HERE.Route route) {
+  _startGuidance(here.Route route) {
     try {
       // Without a route set, this starts tracking mode.
-      _visualNavigator = HERE.VisualNavigator();
+      _visualNavigator = here.VisualNavigator();
     } on InstantiationException {
       throw Exception("Initialization of VisualNavigator failed.");
     }
@@ -152,11 +147,10 @@ class _MyAppState extends State<MyApp> {
     // This enables a navigation view including a rendered navigation arrow.
     _visualNavigator!.startRendering(_hereMapController!);
 
-    // Hook in one of the many listeners. Here we set up a listener to get instructions on the maneuvers to take while driving.
+    // Hook in one of the many listeners. here we set up a listener to get instructions on the maneuvers to take while driving.
     // For more details, please check the "navigation_app" example and the Developer's Guide.
-    _visualNavigator!.maneuverNotificationListener =
-        HERE.ManeuverNotificationListener((String maneuverText) {
-      print("ManeuverNotifications: $maneuverText");
+    _visualNavigator!.maneuverNotificationListener = here.ManeuverNotificationListener((String maneuverText) {
+      logger.d("ManeuverNotifications: $maneuverText");
     });
 
     // Set a route to follow. This leaves tracking mode.
@@ -167,12 +161,10 @@ class _MyAppState extends State<MyApp> {
     _setupLocationSource(_visualNavigator!, route);
   }
 
-  _setupLocationSource(
-      HERE.LocationListener locationListener, HERE.Route route) {
+  _setupLocationSource(here.LocationListener locationListener, here.Route route) {
     try {
       // Provides fake GPS signals based on the route geometry.
-      _locationSimulator = HERE.LocationSimulator.withRoute(
-          route, HERE.LocationSimulatorOptions());
+      _locationSimulator = here.LocationSimulator.withRoute(route, here.LocationSimulatorOptions());
     } on InstantiationException {
       throw Exception("Initialization of LocationSimulator failed.");
     }
@@ -183,9 +175,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    // Free HERE SDK resources before the application shuts down.
+    // Free here SDK resources before the application shuts down.
     SDKNativeEngine.sharedInstance?.dispose();
-    HERE.SdkContext.release();
+    here.SdkContext.release();
     super.dispose();
   }
 
@@ -206,7 +198,7 @@ class _MyAppState extends State<MyApp> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },

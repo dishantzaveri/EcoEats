@@ -124,8 +124,8 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
               options: CarouselOptions(
                 height: 150,
                 autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
                 autoPlayCurve: Curves.fastOutSlowIn,
                 enlargeCenterPage: true,
                 enlargeFactor: 0.3,
@@ -139,7 +139,7 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
                 return Builder(
                   builder: (BuildContext context) {
                     return ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                       child: Image.network("https://source.unsplash.com/random/400x200?sig=${Random().nextInt(100)}"),
                     );
                   },
@@ -159,8 +159,8 @@ class _FoodScreenState extends State<FoodScreen> with SingleTickerProviderStateM
                   crossAxisAlignment: WrapCrossAlignment.start,
                   direction: Axis.vertical,
                   children: [
-                    SizedBox(width: 20, height: 60),
-                    SizedBox(width: 20, height: 60),
+                    const SizedBox(width: 20, height: 60),
+                    const SizedBox(width: 20, height: 60),
                     for (int index = 0; index < 7; index++) ...[
                       Container(
                         height: 60,

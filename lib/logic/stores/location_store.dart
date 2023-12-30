@@ -22,21 +22,21 @@ class LocationStore extends ChangeNotifier {
   Future<void> initLocation() async {
     logger.d("initLocation");
 
-    bool _serviceEnabled;
-    loc.PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    loc.PermissionStatus permissionGranted;
 
-    _serviceEnabled = await locationObject.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await locationObject.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await locationObject.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await locationObject.requestService();
+      if (!serviceEnabled) {
         return;
       }
     }
 
-    _permissionGranted = await locationObject.hasPermission();
-    if (_permissionGranted == loc.PermissionStatus.denied) {
-      _permissionGranted = await locationObject.requestPermission();
-      if (_permissionGranted != loc.PermissionStatus.granted) {
+    permissionGranted = await locationObject.hasPermission();
+    if (permissionGranted == loc.PermissionStatus.denied) {
+      permissionGranted = await locationObject.requestPermission();
+      if (permissionGranted != loc.PermissionStatus.granted) {
         return;
       }
     }

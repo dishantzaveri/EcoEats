@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class UserModel {
   String? id;
   String name;
@@ -74,27 +72,6 @@ class UserModel {
   @override
   String toString() {
     return 'UserModel(id: $id, name: $name, phone: $phone, email: $email, address: $address, city: $city, state: $state, country: $country, zipCode: $zipCode, addressLatitude: $addressLatitude, addressLongitude: $addressLongitude, status: $status, imageUrl: $imageUrl, orders: $orders)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is UserModel &&
-        other.id == id &&
-        other.name == name &&
-        other.phone == phone &&
-        other.email == email &&
-        other.address == address &&
-        other.city == city &&
-        other.state == state &&
-        other.country == country &&
-        other.zipCode == zipCode &&
-        other.addressLatitude == addressLatitude &&
-        other.addressLongitude == addressLongitude &&
-        other.status == status &&
-        other.imageUrl == imageUrl &&
-        listEquals(other.orders, orders);
   }
 
   UserModel copyWith({

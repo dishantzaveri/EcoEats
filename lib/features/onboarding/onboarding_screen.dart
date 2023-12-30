@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:here_hackathon/logic/stores/location_store.dart';
-import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../logic/stores/auth_store.dart';
+import '../../logic/stores/location_store.dart';
+import '../../logic/stores/order_store.dart';
 import '../../utils/const.dart';
 import '../../utils/routes/app_router.gr.dart';
 
 @RoutePage()
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -49,12 +49,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     // wait 1 second
     await Future.delayed(const Duration(milliseconds: 2000));
 
-    if (context.read<AuthStore>().isAuthenticated) {
-      if (context.mounted) {
+    if (context.mounted) {
+      if (context.read<AuthStore>().isAuthenticated) {
         AutoRouter.of(context).replace(const MainScaffoldRoute());
-      }
-    } else {
-      if (context.mounted) {
+      } else {
         AutoRouter.of(context).replace(LoginRoute());
       }
     }
@@ -69,80 +67,74 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           PageView(
             controller: _pageController,
             children: [
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/location.png',
-                      height: 350,
-                      width: 350,
-                    ),
-                    Text(
-                      "Delivery made easy",
-                      style: GoogleFonts.lato(
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/location.png',
+                    height: 350,
+                    width: 350,
+                  ),
+                  Text(
+                    "Delivery made easy",
+                    style: GoogleFonts.lato(
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("", style: GoogleFonts.lato()),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text("", style: GoogleFonts.lato()),
+                ],
               ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/network.png',
-                      height: 350,
-                      width: 350,
-                    ),
-                    Text(
-                      "Delivery made quick",
-                      style: GoogleFonts.lato(
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/network.png',
+                    height: 350,
+                    width: 350,
+                  ),
+                  Text(
+                    "Delivery made quick",
+                    style: GoogleFonts.lato(
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("Sustainable and Eco-friendly delivery at your doorstep", style: GoogleFonts.lato()),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text("Sustainable and Eco-friendly delivery at your doorstep", style: GoogleFonts.lato()),
+                ],
               ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/hero.png',
-                      height: 350,
-                      width: 350,
-                    ),
-                    Text(
-                      "Delivery is your hero",
-                      style: GoogleFonts.lato(
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/hero.png',
+                    height: 350,
+                    width: 350,
+                  ),
+                  Text(
+                    "Delivery is your hero",
+                    style: GoogleFonts.lato(
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("Reduce your carbon footprint", style: GoogleFonts.lato()),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text("Reduce your carbon footprint", style: GoogleFonts.lato()),
+                ],
               ),
             ],
           ),
@@ -150,7 +142,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // alignment: Alignment.center,
             bottom: 60,
             left: MediaQuery.of(context).size.width * 0.5 - 32,
-            child: Column(
+            child: const Column(
               children: [
                 SizedBox(height: 24),
               ],
@@ -161,15 +153,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Spacer(
+                const Spacer(
                   flex: 1,
                 ),
                 AnimatedSmoothIndicator(
                   activeIndex: currentPage.round(),
                   count: 3,
-                  effect: WormEffect(dotWidth: 10.0, dotHeight: 10.0, dotColor: Colors.grey, activeDotColor: Colors.indigo),
+                  effect: const WormEffect(dotWidth: 10.0, dotHeight: 10.0, dotColor: Colors.grey, activeDotColor: Colors.indigo),
                 ),
-                Spacer(
+                const Spacer(
                   flex: 5,
                 ),
                 MaterialButton(

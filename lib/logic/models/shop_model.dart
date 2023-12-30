@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class ShopModel {
   String? id;
   String name;
@@ -75,27 +73,6 @@ class ShopModel {
   @override
   String toString() {
     return 'ShopModel(id: $id, name: $name, description: $description, imageUrl: $imageUrl, accessories: $accessories, address: $address, city: $city, state: $state, country: $country, zipCode: $zipCode, addressLatitude: $addressLatitude, addressLongitude: $addressLongitude, status: $status, rating: $rating)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is ShopModel &&
-        other.id == id &&
-        other.name == name &&
-        other.description == description &&
-        other.imageUrl == imageUrl &&
-        listEquals(other.accessories, accessories) &&
-        other.address == address &&
-        other.city == city &&
-        other.state == state &&
-        other.country == country &&
-        other.zipCode == zipCode &&
-        other.addressLatitude == addressLatitude &&
-        other.addressLongitude == addressLongitude &&
-        other.status == status &&
-        other.rating == rating;
   }
 
   ShopModel copyWith({

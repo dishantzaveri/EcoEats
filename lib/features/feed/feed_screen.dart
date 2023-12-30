@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:here_hackathon/features/feed/restraunt_widget.dart';
-import 'package:here_hackathon/logic/stores/order_store.dart';
-import 'package:here_hackathon/utils/const.dart';
-import 'package:here_hackathon/utils/typography.dart';
 import 'package:provider/provider.dart';
+
+import '../../logic/models/shop_model.dart';
+import '../../logic/stores/order_store.dart';
+import '../../utils/const.dart';
+import '../../utils/typography.dart';
+import 'restraunt_widget.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -13,17 +15,10 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  List<String> categories = [
-    "All",
-    "Indian",
-    "Pizza",
-    "Continental",
-    "Chinese",
-    "Cafe"
-  ];
+  List<String> categories = ["All", "Indian", "Pizza", "Continental", "Chinese", "Cafe"];
   int selected = 0;
-  TextEditingController _searchController = TextEditingController();
-  var shops;
+  final TextEditingController _searchController = TextEditingController();
+  late List<ShopModel> shops;
 
   @override
   void initState() {
@@ -44,8 +39,7 @@ class _FeedScreenState extends State<FeedScreen> {
               children: [
                 Text(
                   "DELIVER TO",
-                  style: Typo.bodyLarge.copyWith(
-                      color: Colors.orange, fontWeight: FontWeight.w600),
+                  style: Typo.bodyLarge.copyWith(color: Colors.orange, fontWeight: FontWeight.w600),
                 ),
                 const Text(
                   "IIT Bombay, Main Gate",
@@ -53,8 +47,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 )
               ],
             ),
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.shopping_bag_rounded))
+            IconButton(onPressed: () {}, icon: const Icon(Icons.shopping_bag_rounded))
           ],
         ),
       ),
@@ -82,13 +75,13 @@ class _FeedScreenState extends State<FeedScreen> {
                 decoration: InputDecoration(
                   hintText: 'Search dishes, restraunts',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.clear),
+                    icon: const Icon(Icons.clear),
                     onPressed: () {
                       _searchController.clear();
                     },
                   ),
                   prefixIcon: IconButton(
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                     onPressed: () {},
                   ),
                   border: OutlineInputBorder(
@@ -100,7 +93,7 @@ class _FeedScreenState extends State<FeedScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "All Categories",
                   style: Typo.titleLarge,
                 ),
@@ -108,11 +101,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   onPressed: () {},
                   child: Text(
                     "See all >",
-                    style: Typo.titleMedium.copyWith(
-                        color: MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Colors.white
-                            : Colors.black),
+                    style: Typo.titleMedium.copyWith(color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.white : Colors.black),
                   ),
                 ),
               ],
@@ -135,26 +124,19 @@ class _FeedScreenState extends State<FeedScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: selected == index
-                                ? Colors.orange
-                                : Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            color: selected == index ? Colors.orange : Colors.white,
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                             boxShadow: [
                               BoxShadow(
-                                color: selected == index
-                                    ? Colors.orange
-                                    : Colors.white,
-                                offset: Offset(3, 3),
+                                color: selected == index ? Colors.orange : Colors.white,
+                                offset: const Offset(3, 3),
                                 blurRadius: 10,
                               ),
                             ],
                           ),
                           child: Text(
                             categories[index],
-                            style: Typo.bodyLarge.copyWith(
-                                color: selected == index
-                                    ? Colors.white
-                                    : Colors.black),
+                            style: Typo.bodyLarge.copyWith(color: selected == index ? Colors.white : Colors.black),
                           ),
                         ),
                       ),
@@ -164,7 +146,7 @@ class _FeedScreenState extends State<FeedScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Open Restraunts",
                   style: Typo.titleLarge,
                 ),
@@ -172,11 +154,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   onPressed: () {},
                   child: Text(
                     "See all >",
-                    style: Typo.titleMedium.copyWith(
-                        color: MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Colors.white
-                            : Colors.black),
+                    style: Typo.titleMedium.copyWith(color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.white : Colors.black),
                   ),
                 ),
               ],
@@ -185,12 +163,7 @@ class _FeedScreenState extends State<FeedScreen> {
               child: ListView.builder(
                 itemCount: shops.length,
                 itemBuilder: (context, index) {
-                  return RestrauntWidget(
-                      name: shops[index].name,
-                      accessories: shops[index].accessories,
-                      imageUrl: shops[index].imageUrl,
-                      status: shops[index].status,
-                      rating: shops[index].rating);
+                  return RestrauntWidget(name: shops[index].name, accessories: shops[index].accessories!, imageUrl: shops[index].imageUrl, status: shops[index].status, rating: shops[index].rating);
                 },
               ),
             ),

@@ -126,27 +126,4 @@ class OrderModel {
     );
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is OrderModel &&
-        other.id == id &&
-        other.name == name &&
-        other.description == description &&
-        other.imageUrl == imageUrl &&
-        other.price == price &&
-        other.quantity == quantity &&
-        other.status == status &&
-        other.sourceLatitude == sourceLatitude &&
-        other.sourceLongitude == sourceLongitude &&
-        other.destinationLatitude == destinationLatitude &&
-        other.destinationLongitude == destinationLongitude &&
-        other.sourceAddress == sourceAddress &&
-        other.destinationAddress == destinationAddress &&
-        other.sourceName == sourceName &&
-        other.destinationName == destinationName &&
-        other.sourcePhoneNumber == sourcePhoneNumber &&
-        other.destinationPhoneNumber == destinationPhoneNumber;
-  }
 }

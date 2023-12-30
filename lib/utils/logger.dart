@@ -8,7 +8,7 @@ class CustomLogOutput extends ConsoleOutput {
     for (var line in event.lines) {
       switch (event.level) {
         case Level.info:
-          print('$line'); // Blue color for info
+          print(line); // Blue color for info
           // print('\x1B[34m$line\x1B[0m'); // Blue color for info
           break;
         // Define other cases for different log levels if needed

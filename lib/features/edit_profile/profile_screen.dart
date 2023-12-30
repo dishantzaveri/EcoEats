@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:here_hackathon/utils/palette.dart';
 
+import '../../utils/palette.dart';
 import 'constants/colors.dart';
 import 'constants/textstyles.dart';
 
@@ -8,10 +8,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(

@@ -54,21 +54,6 @@ class AccessoryModel {
     return 'AccessoryModel(id: $id, name: $name, description: $description, imageUrl: $imageUrl, price: $price, quantity: $quantity, status: $status, sourceLatitude: $sourceLatitude, sourceLongitude: $sourceLongitude)';
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is AccessoryModel &&
-        other.id == id &&
-        other.name == name &&
-        other.description == description &&
-        other.imageUrl == imageUrl &&
-        other.price == price &&
-        other.quantity == quantity &&
-        other.status == status &&
-        other.sourceLatitude == sourceLatitude &&
-        other.sourceLongitude == sourceLongitude;
-  }
 
   AccessoryModel copyWith({
     String? id,

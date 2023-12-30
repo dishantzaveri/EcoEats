@@ -132,28 +132,4 @@ class RiderModel {
     );
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is RiderModel &&
-        other.id == id &&
-        other.name == name &&
-        other.phone == phone &&
-        other.email == email &&
-        other.address == address &&
-        other.city == city &&
-        other.state == state &&
-        other.country == country &&
-        other.zipCode == zipCode &&
-        other.addressLatitude == addressLatitude &&
-        other.addressLongitude == addressLongitude &&
-        other.status == status &&
-        other.rating == rating &&
-        other.imageUrl == imageUrl &&
-        other.vehicleType == vehicleType &&
-        other.vehicleNumber == vehicleNumber &&
-        other.currentLatitude == currentLatitude &&
-        other.currentLongitude == currentLongitude;
-  }
 }

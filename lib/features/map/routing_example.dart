@@ -24,19 +24,21 @@ import 'package:here_sdk/animation.dart' as ani;
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/mapview.dart';
-import 'package:here_sdk/routing.dart';
 import 'package:here_sdk/routing.dart' as here;
+import 'package:here_sdk/routing.dart';
 import 'package:intl/intl.dart';
+
+import '../../utils/const.dart';
 
 // A callback to notify the hosting widget.
 typedef ShowDialogFunction = void Function(String title, String message);
 
 class RoutingExample {
   final HereMapController _hereMapController;
-  List<MapPolyline> _mapPolylines = [];
+  final List<MapPolyline> _mapPolylines = [];
   late RoutingEngine _routingEngine;
   final ShowDialogFunction _showDialog;
-  final _BERLIN_HQ_GEO_COORDINATES = GeoCoordinates(52.530971, 13.385088);
+  final berlinGqGeoCoordinates = GeoCoordinates(52.530971, 13.385088);
 
   RoutingExample(ShowDialogFunction showDialogCallback, HereMapController hereMapController)
       : _showDialog = showDialogCallback,
@@ -53,7 +55,7 @@ class RoutingExample {
   }
 
   Future<void> addRoute() async {
-    var startGeoCoordinates = _BERLIN_HQ_GEO_COORDINATES;
+    var startGeoCoordinates = berlinGqGeoCoordinates;
     var destinationGeoCoordinates = _createRandomGeoCoordinatesInViewport();
     var startWaypoint = Waypoint.withDefaults(startGeoCoordinates);
     var destinationWaypoint = Waypoint.withDefaults(destinationGeoCoordinates);
@@ -63,8 +65,7 @@ class RoutingExample {
     CarOptions carOptions = CarOptions();
     carOptions.routeOptions.enableTolls = true;
 
-    _routingEngine.calculateCarRoute(waypoints, carOptions,
-        (RoutingError? routingError, List<here.Route>? routeList) async {
+    _routingEngine.calculateCarRoute(waypoints, carOptions, (RoutingError? routingError, List<here.Route>? routeList) async {
       if (routingError == null) {
         // When error is null, then the list guaranteed to be not null.
         here.Route route = routeList!.first;
@@ -86,7 +87,7 @@ class RoutingExample {
   void _logRouteViolations(here.Route route) {
     for (var section in route.sections) {
       for (var notice in section.sectionNotices) {
-        print("This route contains the following warning: " + notice.code.toString());
+        logger.d("This route contains the following warning: ${notice.code}");
       }
     }
   }
@@ -95,23 +96,22 @@ class RoutingExample {
     for (Section section in route.sections) {
       // The spans that make up the polyline along which tolls are required or
       // where toll booths are located.
-      List<Span> spans = section.spans;
       List<Toll> tolls = section.tolls;
-      if (!tolls.isEmpty) {
-        print("Attention: This route may require tolls to be paid.");
+      if (tolls.isNotEmpty) {
+        logger.d("Attention: This route may require tolls to be paid.");
       }
       for (Toll toll in tolls) {
-        print("Toll information valid for this list of spans:");
-        print("Toll system: " + toll.tollSystem);
-        print("Toll country code (ISO-3166-1 alpha-3): " + toll.countryCode);
-        print("Toll fare information: ");
+        logger.d("Toll information valid for this list of spans:");
+        logger.d("Toll system: ${toll.tollSystem}");
+        logger.d("Toll country code (ISO-3166-1 alpha-3): ${toll.countryCode}");
+        logger.d("Toll fare information: ");
         for (TollFare tollFare in toll.fares) {
           // A list of possible toll fares which may depend on time of day, payment method and
           // vehicle characteristics. For further details please consult the local
           // authorities.
-          print("Toll price: " + tollFare.price.toString() + " " + tollFare.currency);
+          logger.d("Toll price: ${tollFare.price} ${tollFare.currency}");
           for (PaymentMethod paymentMethod in tollFare.paymentMethods) {
-            print("Accepted payment methods for this price: " + paymentMethod.toString());
+            logger.d("Accepted payment methods for this price: $paymentMethod");
           }
         }
       }
@@ -131,11 +131,11 @@ class RoutingExample {
     for (int i = 0; i < route.sections.length; i++) {
       Section section = route.sections.elementAt(i);
 
-      print("Route Section : " + (i + 1).toString());
-      print("Route Section Departure Time : " + dateFormat.format(section.departureLocationTime!.localTime));
-      print("Route Section Arrival Time : " + dateFormat.format(section.arrivalLocationTime!.localTime));
-      print("Route Section length : " + section.lengthInMeters.toString() + " m");
-      print("Route Section duration : " + section.duration.inSeconds.toString() + " s");
+      logger.d("Route Section : ${i + 1}");
+      logger.d("Route Section Departure Time : ${dateFormat.format(section.departureLocationTime!.localTime)}");
+      logger.d("Route Section Arrival Time : ${dateFormat.format(section.arrivalLocationTime!.localTime)}");
+      logger.d("Route Section length : ${section.lengthInMeters} m");
+      logger.d("Route Section duration : ${section.duration.inSeconds} s");
     }
   }
 
@@ -145,14 +145,9 @@ class RoutingExample {
     int estimatedTrafficDelayInSeconds = route.trafficDelay.inSeconds;
     int lengthInMeters = route.lengthInMeters;
 
-    String routeDetails = 'Travel Time: ' +
-        _formatTime(estimatedTravelTimeInSeconds) +
-        ', Traffic Delay: ' +
-        _formatTime(estimatedTrafficDelayInSeconds) +
-        ', Length: ' +
-        _formatLength(lengthInMeters);
+    String routeDetails = 'Travel Time: ${_formatTime(estimatedTravelTimeInSeconds)}, Traffic Delay: ${_formatTime(estimatedTrafficDelayInSeconds)}, Length: ${_formatLength(lengthInMeters)}';
 
-    _showDialog('Route Details', '$routeDetails');
+    _showDialog('Route Details', routeDetails);
   }
 
   String _formatTime(int sec) {
@@ -177,18 +172,14 @@ class RoutingExample {
     MapPolyline routeMapPolyline;
     try {
       routeMapPolyline = MapPolyline.withRepresentation(
-          routeGeoPolyline,
-          MapPolylineSolidRepresentation(
-              MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
-              polylineColor,
-              LineCap.round));
+          routeGeoPolyline, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), polylineColor, LineCap.round));
       _hereMapController.mapScene.addMapPolyline(routeMapPolyline);
       _mapPolylines.add(routeMapPolyline);
     } on MapPolylineRepresentationInstantiationException catch (e) {
-      print("MapPolylineRepresentation Exception:" + e.error.name);
+      logger.d("MapPolylineRepresentation Exception:${e.error.name}");
       return;
     } on MapMeasureDependentRenderSizeInstantiationException catch (e) {
-      print("MapMeasureDependentRenderSize Exception:" + e.error.name);
+      logger.d("MapMeasureDependentRenderSize Exception:${e.error.name}");
       return;
     }
 
@@ -199,7 +190,7 @@ class RoutingExample {
   // This renders the traffic jam factor on top of the route as multiple MapPolylines per span.
   _showTrafficOnRoute(here.Route route) {
     if (route.lengthInMeters / 1000 > 5000) {
-      print("Skip showing traffic-on-route for longer routes.");
+      logger.d("Skip showing traffic-on-route for longer routes.");
       return;
     }
 
@@ -214,19 +205,15 @@ class RoutingExample {
         double widthInPixels = 10;
         MapPolyline trafficSpanMapPolyline;
         try {
-          trafficSpanMapPolyline = new MapPolyline.withRepresentation(
-              span.geometry,
-              MapPolylineSolidRepresentation(
-                  MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels),
-                  lineColor,
-                  LineCap.round));
+          trafficSpanMapPolyline = MapPolyline.withRepresentation(
+              span.geometry, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), lineColor, LineCap.round));
           _hereMapController.mapScene.addMapPolyline(trafficSpanMapPolyline);
           _mapPolylines.add(trafficSpanMapPolyline);
         } on MapPolylineRepresentationInstantiationException catch (e) {
-          print("MapPolylineRepresentation Exception:" + e.error.name);
+          logger.d("MapPolylineRepresentation Exception:${e.error.name}");
           return;
         } on MapMeasureDependentRenderSizeInstantiationException catch (e) {
-          print("MapMeasureDependentRenderSize Exception:" + e.error.name);
+          logger.d("MapMeasureDependentRenderSize Exception:${e.error.name}");
           return;
         }
       }
@@ -243,18 +230,18 @@ class RoutingExample {
     if (jamFactor == null || jamFactor < 4) {
       return null;
     } else if (jamFactor >= 4 && jamFactor < 8) {
-      return Color.fromARGB(160, 255, 255, 0); // Yellow
+      return const Color.fromARGB(160, 255, 255, 0); // Yellow
     } else if (jamFactor >= 8 && jamFactor < 10) {
-      return Color.fromARGB(160, 255, 0, 0); // Red
+      return const Color.fromARGB(160, 255, 0, 0); // Red
     }
-    return Color.fromARGB(160, 0, 0, 0); // Black
+    return const Color.fromARGB(160, 0, 0, 0); // Black
   }
 
   GeoCoordinates _createRandomGeoCoordinatesInViewport() {
     GeoBox? geoBox = _hereMapController.camera.boundingBox;
     if (geoBox == null) {
       // Happens only when map is not fully covering the viewport as the map is tilted.
-      print("The map view is tilted, falling back to fixed destination coordinate.");
+      logger.d("The map view is tilted, falling back to fixed destination coordinate.");
       return GeoCoordinates(52.520798, 13.409408);
     }
 
@@ -282,15 +269,12 @@ class RoutingExample {
     double tilt = 0;
     // We want to show the route fitting in the map view with an additional padding of 50 pixels.
     Point2D origin = Point2D(50, 50);
-    Size2D sizeInPixels =
-        Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
+    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
     Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
 
     // Animate to the route within a duration of 3 seconds.
-    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(
-        route!.boundingBox, GeoOrientationUpdate(bearing, tilt), mapViewport);
-    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
-        update, const Duration(milliseconds: 3000), ani.Easing(ani.EasingFunction.inCubic));
+    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route.boundingBox, GeoOrientationUpdate(bearing, tilt), mapViewport);
+    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(update, const Duration(milliseconds: 3000), ani.Easing(ani.EasingFunction.inCubic));
     _hereMapController.camera.startAnimation(animation);
   }
 }

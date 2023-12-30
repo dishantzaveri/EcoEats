@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:here_hackathon/logic/stores/location_store.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.engine.dart';
 import 'package:here_sdk/core.errors.dart';
@@ -9,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'logic/stores/auth_store.dart';
+import 'logic/stores/location_store.dart';
 import 'logic/stores/order_store.dart';
 import 'utils/const.dart';
 import 'utils/dark_theme.dart';
@@ -52,27 +52,24 @@ void _initializeHERESDK() async {
 Future<void> initLocation() async {
   loc.Location location = loc.Location();
 
-  bool _serviceEnabled;
-  loc.PermissionStatus _permissionGranted;
-  loc.LocationData locationData;
+  bool serviceEnabled;
+  loc.PermissionStatus permissionGranted;
 
-  _serviceEnabled = await location.serviceEnabled();
-  if (!_serviceEnabled) {
-    _serviceEnabled = await location.requestService();
-    if (!_serviceEnabled) {
+  serviceEnabled = await location.serviceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await location.requestService();
+    if (!serviceEnabled) {
       return;
     }
   }
 
-  _permissionGranted = await location.hasPermission();
-  if (_permissionGranted == loc.PermissionStatus.denied) {
-    _permissionGranted = await location.requestPermission();
-    if (_permissionGranted != loc.PermissionStatus.granted) {
+  permissionGranted = await location.hasPermission();
+  if (permissionGranted == loc.PermissionStatus.denied) {
+    permissionGranted = await location.requestPermission();
+    if (permissionGranted != loc.PermissionStatus.granted) {
       return;
     }
   }
-
-  locationData = await location.getLocation();
 }
 
 class MainApp extends StatelessWidget {

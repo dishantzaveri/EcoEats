@@ -24,9 +24,9 @@ import 'package:here_sdk/core.dart';
 import 'package:here_sdk/mapview.dart';
 
 class CustomMapStyleExample {
-  HereMapController _hereMapController;
+  final HereMapController _hereMapController;
 
-  CustomMapStyleExample(HereMapController this._hereMapController) {
+  CustomMapStyleExample(this._hereMapController) {
     double distanceToEarthInMeters = 60000;
     MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
     _hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(52.530932, 13.384915), mapMeasureZoom);
@@ -41,7 +41,7 @@ class CustomMapStyleExample {
         // Scene loaded.
         logger.d("Scene loaded");
       } else {
-        print("Map scene not loaded. MapError: " + error.toString());
+        logger.d("Map scene not loaded. MapError: $error");
       }
     });
   }
@@ -51,7 +51,7 @@ class CustomMapStyleExample {
       if (error == null) {
         // Scene loaded.
       } else {
-        print("Map scene not loaded. MapError: " + error.toString());
+        logger.d("Map scene not loaded. MapError: $error");
       }
     });
   }

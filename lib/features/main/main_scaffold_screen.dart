@@ -1,12 +1,14 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:here_hackathon/features/map/map_screen.dart';
 
 import '../../utils/palette.dart';
 import '../edit_profile/profile_screen.dart';
 import '../feed/feed_screen.dart';
 import '../foods/food_screen.dart';
+import '../map/map_screen.dart';
 
 @RoutePage()
 class MainScaffoldScreen extends StatefulWidget {

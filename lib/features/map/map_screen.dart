@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:here_hackathon/logic/models/order_model.dart';
-import 'package:here_hackathon/logic/models/rider_model.dart';
-import 'package:here_hackathon/logic/stores/order_store.dart';
-import 'package:here_hackathon/utils/const.dart';
-import 'package:here_hackathon/utils/typography.dart';
 import 'package:here_sdk/animation.dart' as anim;
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
@@ -19,12 +15,15 @@ import 'package:here_sdk/navigation.dart' as nav;
 import 'package:here_sdk/routing.dart' as rout;
 import 'package:location/location.dart' as loc;
 import 'package:provider/provider.dart';
-import 'package:here_sdk/animation.dart' as anim;
-import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../logic/models/order_model.dart';
+import '../../logic/models/rider_model.dart';
 import '../../logic/stores/location_store.dart';
+import '../../logic/stores/order_store.dart';
+import '../../utils/const.dart';
 import '../../utils/palette.dart';
-import 'CustomMapStyleExample.dart';
+import '../../utils/typography.dart';
+import 'custom_map_styles.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -38,12 +37,12 @@ enum TtsState { playing, stopped, paused, continued }
 class _MapScreenState extends State<MapScreen> {
   late final HereMapController _hereMapController;
   // final MapCamera _mapCamera;
-  CustomMapStyleExample? _customMapStyleExample;
+  CustomMapStyleExample? customMapStyleExample;
   late LocationEngine _locationEngine;
   late LocationIndicator _locationIndicator;
   late rout.RoutingEngine _routingEngine;
   late double mylongit, mylatit;
-  List<MapPolyline> _mapPolylines = [];
+  final List<MapPolyline> _mapPolylines = [];
   nav.VisualNavigator? _visualNavigator;
   nav.LocationSimulator? _locationSimulator;
   late rout.Route route;
@@ -87,21 +86,15 @@ class _MapScreenState extends State<MapScreen> {
       }
       // Check if a new document has been added.
       List<DocumentChange> documentChanges = snapshot.docChanges;
-      if (documentChanges
-              .any((change) => change.type == DocumentChangeType.added) &&
-          !isFirstEvent) {
+      if (documentChanges.any((change) => change.type == DocumentChangeType.added) && !isFirstEvent) {
         orders = context.read<OrderStore>().orders.values.toList();
-        OrderModel ord = OrderModel.fromJson(
-            documentChanges[0].doc.data() as Map<String, dynamic>);
+        OrderModel ord = OrderModel.fromJson(documentChanges[0].doc.data() as Map<String, dynamic>);
         logger.d(ord);
-        addMarker(_hereMapController, ord.sourceLatitude, ord.sourceLongitude,
-            "assets/images/food.png");
-        addMarker(_hereMapController, ord.destinationLatitude,
-            ord.destinationLongitude, "assets/images/ecoeatspin.png");
+        addMarker(_hereMapController, ord.sourceLatitude, ord.sourceLongitude, "assets/images/food.png");
+        addMarker(_hereMapController, ord.destinationLatitude, ord.destinationLongitude, "assets/images/ecoeatspin.png");
         // waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
         //     order.sourceLatitude, order.sourceLongitude)));
-        waypoints.add(rout.Waypoint.withDefaults(
-            GeoCoordinates(ord.destinationLatitude, ord.destinationLongitude)));
+        waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(ord.destinationLatitude, ord.destinationLongitude)));
         // If a new document has been added, show a bottom modal screen.
         showModalBottomSheet(
           context: context,
@@ -202,15 +195,11 @@ class _MapScreenState extends State<MapScreen> {
               //     GeoCoordinates(allMarkers[2].coordinates.latitude,
               //         allMarkers[2].coordinates.longitude),
               //     durationMs: 10000);
-              DocumentReference copyFrom = FirebaseFirestore.instance
-                  .collection('orders')
-                  .doc('0Ur71HGoD54A2Sh5UA7U');
-              DocumentReference copyTo =
-                  FirebaseFirestore.instance.collection('orders').doc('testme');
+              DocumentReference copyFrom = FirebaseFirestore.instance.collection('orders').doc('0Ur71HGoD54A2Sh5UA7U');
+              DocumentReference copyTo = FirebaseFirestore.instance.collection('orders').doc('testme');
 
               copyFrom.get().then((value) {
-                Map<String, dynamic> data =
-                    value.data() as Map<String, dynamic>;
+                Map<String, dynamic> data = value.data() as Map<String, dynamic>;
                 data['sourceLatitude'] = 0.0;
                 data['sourceLongitude'] = 0.0;
                 data['destinationLatitude'] = 1.0;
@@ -241,9 +230,7 @@ class _MapScreenState extends State<MapScreen> {
             heroTag: null,
             child: const Icon(Icons.navigation),
             onPressed: () async {
-              isNavigating
-                  ? _visualNavigator!.stopRendering()
-                  : _startGuidance(route);
+              isNavigating ? _visualNavigator!.stopRendering() : _startGuidance(route);
               isNavigating ? null : flutterTts.stop();
               setState(() {
                 isNavigating = !isNavigating;
@@ -265,12 +252,11 @@ class _MapScreenState extends State<MapScreen> {
     }
 
     // This enables a navigation view including a rendered navigation arrow.
-    _visualNavigator!.startRendering(_hereMapController!);
+    _visualNavigator!.startRendering(_hereMapController);
 
     // Hook in one of the many listeners. Here we set up a listener to get instructions on the maneuvers to take while driving.
     // For more details, please check the "navigation_app" example and the Developer's Guide.
-    _visualNavigator!.maneuverNotificationListener =
-        nav.ManeuverNotificationListener((String maneuverText) async {
+    _visualNavigator!.maneuverNotificationListener = nav.ManeuverNotificationListener((String maneuverText) async {
       logger.d("ManeuverNotifications: $maneuverText");
       await _speak(maneuverText);
     });
@@ -286,8 +272,7 @@ class _MapScreenState extends State<MapScreen> {
   _setupLocationSource(LocationListener locationListener, rout.Route route) {
     try {
       // Provides fake GPS signals based on the route geometry.
-      _locationSimulator = nav.LocationSimulator.withRoute(
-          route, nav.LocationSimulatorOptions());
+      _locationSimulator = nav.LocationSimulator.withRoute(route, nav.LocationSimulatorOptions());
     } on InstantiationException {
       throw Exception("Initialization of LocationSimulator failed.");
     }
@@ -306,30 +291,20 @@ class _MapScreenState extends State<MapScreen> {
     double tilt = 0;
     // We want to show the route fitting in the map view with an additional padding of 50 pixels.
     Point2D origin = Point2D(50, 50);
-    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100,
-        _hereMapController.viewportSize.height - 100);
+    Size2D sizeInPixels = Size2D(_hereMapController.viewportSize.width - 100, _hereMapController.viewportSize.height - 100);
     Rectangle2D mapViewport = Rectangle2D(origin, sizeInPixels);
 
     // Animate to the route within a duration of 3 seconds.
-    MapCameraUpdate update =
-        MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(
-            route!.boundingBox,
-            GeoOrientationUpdate(bearing, tilt),
-            mapViewport);
-    MapCameraAnimation animation =
-        MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(
-            update,
-            const Duration(milliseconds: 3000),
-            anim.Easing(anim.EasingFunction.inCubic));
+    MapCameraUpdate update = MapCameraUpdateFactory.lookAtAreaWithGeoOrientationAndViewRectangle(route.boundingBox, GeoOrientationUpdate(bearing, tilt), mapViewport);
+    MapCameraAnimation animation = MapCameraAnimationFactory.createAnimationFromUpdateWithEasing(update, const Duration(milliseconds: 3000), anim.Easing(anim.EasingFunction.inCubic));
     _hereMapController.camera.startAnimation(animation);
   }
 
-  GeoCoordinates _createRandomGeoCoordinatesInViewport() {
+  GeoCoordinates createRandomGeoCoordinatesInViewport() {
     GeoBox? geoBox = _hereMapController.camera.boundingBox;
     if (geoBox == null) {
       // Happens only when map is not fully covering the viewport as the map is tilted.
-      print(
-          "The map view is tilted, falling back to fixed destination coordinate.");
+      logger.d("The map view is tilted, falling back to fixed destination coordinate.");
       return GeoCoordinates(mylatit, mylongit);
     }
 
@@ -348,23 +323,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   int i = 0;
-  List options = [
-    rout.CarOptions,
-    rout.TruckOptions,
-    rout.PedestrianOptions,
-    rout.ScooterOptions,
-    rout.BicycleOptions,
-    rout.EVCarOptions,
-    rout.TaxiOptions,
-    rout.BusOptions,
-    rout.TaxiOptions
-  ];
+  List options = [rout.CarOptions, rout.TruckOptions, rout.PedestrianOptions, rout.ScooterOptions, rout.BicycleOptions, rout.EVCarOptions, rout.TaxiOptions, rout.BusOptions, rout.TaxiOptions];
   Future<void> addRoute() async {
     var startGeoCoordinates = GeoCoordinates(mylatit, mylongit);
     //var destinationGeoCoordinates = GeoCoordinates(latit, longit);
     var startWaypoint = rout.Waypoint.withDefaults(startGeoCoordinates);
-    var destinationWaypoint = rout.Waypoint.withDefaults(GeoCoordinates(
-        orders[3].destinationLatitude, orders[3].destinationLongitude));
+    var destinationWaypoint = rout.Waypoint.withDefaults(GeoCoordinates(orders[3].destinationLatitude, orders[3].destinationLongitude));
 
     List<rout.Waypoint> initailPoints = [
       startWaypoint,
@@ -377,26 +341,16 @@ class _MapScreenState extends State<MapScreen> {
     List<rout.Waypoint> selectedWaypoints = [startWaypoint];
     rout.Route candidateRoute;
 
-    _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(),
-        (rout.RoutingError? routingError,
-            List<rout.Route>? initialRouteList) async {
+    _routingEngine.calculateCarRoute(initailPoints, rout.CarOptions(), (rout.RoutingError? routingError, List<rout.Route>? initialRouteList) async {
       if (routingError == null) {
         rout.Route initialRoute = initialRouteList!.first;
         double initialDistance = initialRoute.lengthInMeters.toDouble();
         for (var waypoint in waypoints) {
-          var candidateWaypoints = [
-            ...selectedWaypoints,
-            waypoint,
-            destinationWaypoint
-          ];
-          _routingEngine
-              .calculateCarRoute(candidateWaypoints, rout.CarOptions(),
-                  (rout.RoutingError? routingError,
-                      List<rout.Route>? routeList) async {
+          var candidateWaypoints = [...selectedWaypoints, waypoint, destinationWaypoint];
+          _routingEngine.calculateCarRoute(candidateWaypoints, rout.CarOptions(), (rout.RoutingError? routingError, List<rout.Route>? routeList) async {
             if (routingError == null) {
               candidateRoute = routeList!.first;
-              double candidateDistance =
-                  candidateRoute.lengthInMeters.toDouble();
+              double candidateDistance = candidateRoute.lengthInMeters.toDouble();
 
               // Check if adding the waypoint increases the route length by a certain threshold (e.g., 10%).
               double threshold = 1.5;
@@ -446,7 +400,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -457,8 +411,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Future<void> _markerPopup(String title, String message, String imageUrl,
-      String qty, String price, String status) async {
+  Future<void> _markerPopup(String title, String message, String imageUrl, String qty, String price, String status) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -477,26 +430,26 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text(title,
                       style: Typo.headlineMedium.copyWith(
                         fontWeight: FontWeight.bold,
                       )),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text(message),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text('Quantity: $qty'),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text('Price: $price'),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text('Status: $status'),
                 ),
               ],
@@ -504,7 +457,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -518,8 +471,7 @@ class _MapScreenState extends State<MapScreen> {
   void _logRouteViolations(rout.Route route) {
     for (var section in route.sections) {
       for (var notice in section.sectionNotices) {
-        logger.d("This route contains the following warning: " +
-            notice.code.toString());
+        logger.d("This route contains the following warning: ${notice.code}");
       }
     }
   }
@@ -532,19 +484,14 @@ class _MapScreenState extends State<MapScreen> {
     MapPolyline routeMapPolyline;
     try {
       routeMapPolyline = MapPolyline.withRepresentation(
-          routeGeoPolyline,
-          MapPolylineSolidRepresentation(
-              MapMeasureDependentRenderSize.withSingleSize(
-                  RenderSizeUnit.pixels, widthInPixels),
-              polylineColor,
-              LineCap.round));
+          routeGeoPolyline, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), polylineColor, LineCap.round));
       _hereMapController.mapScene.addMapPolyline(routeMapPolyline);
       _mapPolylines.add(routeMapPolyline);
     } on MapPolylineRepresentationInstantiationException catch (e) {
-      print("MapPolylineRepresentation Exception:" + e.error.name);
+      logger.d("MapPolylineRepresentation Exception:${e.error.name}");
       return;
     } on MapMeasureDependentRenderSizeInstantiationException catch (e) {
-      print("MapMeasureDependentRenderSize Exception:" + e.error.name);
+      logger.d("MapMeasureDependentRenderSize Exception:${e.error.name}");
       return;
     }
 
@@ -556,16 +503,16 @@ class _MapScreenState extends State<MapScreen> {
     if (jamFactor == null || jamFactor < 4) {
       return null;
     } else if (jamFactor >= 4 && jamFactor < 8) {
-      return Color.fromARGB(160, 255, 255, 0); // Yellow
+      return const Color.fromARGB(160, 255, 255, 0); // Yellow
     } else if (jamFactor >= 8 && jamFactor < 10) {
-      return Color.fromARGB(160, 255, 0, 0); // Red
+      return const Color.fromARGB(160, 255, 0, 0); // Red
     }
-    return Color.fromARGB(160, 0, 0, 0); // Black
+    return const Color.fromARGB(160, 0, 0, 0); // Black
   }
 
   _showTrafficOnRoute(rout.Route route) {
     if (route.lengthInMeters / 1000 > 5000) {
-      print("Skip showing traffic-on-route for longer routes.");
+      logger.d("Skip showing traffic-on-route for longer routes.");
       return;
     }
 
@@ -580,20 +527,15 @@ class _MapScreenState extends State<MapScreen> {
         double widthInPixels = 10;
         MapPolyline trafficSpanMapPolyline;
         try {
-          trafficSpanMapPolyline = new MapPolyline.withRepresentation(
-              span.geometry,
-              MapPolylineSolidRepresentation(
-                  MapMeasureDependentRenderSize.withSingleSize(
-                      RenderSizeUnit.pixels, widthInPixels),
-                  lineColor,
-                  LineCap.round));
+          trafficSpanMapPolyline = MapPolyline.withRepresentation(
+              span.geometry, MapPolylineSolidRepresentation(MapMeasureDependentRenderSize.withSingleSize(RenderSizeUnit.pixels, widthInPixels), lineColor, LineCap.round));
           _hereMapController.mapScene.addMapPolyline(trafficSpanMapPolyline);
           _mapPolylines.add(trafficSpanMapPolyline);
         } on MapPolylineRepresentationInstantiationException catch (e) {
-          print("MapPolylineRepresentation Exception:" + e.error.name);
+          logger.d("MapPolylineRepresentation Exception:${e.error.name}");
           return;
         } on MapMeasureDependentRenderSizeInstantiationException catch (e) {
-          print("MapMeasureDependentRenderSize Exception:" + e.error.name);
+          logger.d("MapMeasureDependentRenderSize Exception:${e.error.name}");
           return;
         }
       }
@@ -606,14 +548,9 @@ class _MapScreenState extends State<MapScreen> {
     int estimatedTrafficDelayInSeconds = route.trafficDelay.inSeconds;
     int lengthInMeters = route.lengthInMeters;
 
-    String routeDetails = 'Travel Time: ' +
-        _formatTime(estimatedTravelTimeInSeconds) +
-        ', Traffic Delay: ' +
-        _formatTime(estimatedTrafficDelayInSeconds) +
-        ', Length: ' +
-        _formatLength(lengthInMeters);
+    String routeDetails = 'Travel Time: ${_formatTime(estimatedTravelTimeInSeconds)}, Traffic Delay: ${_formatTime(estimatedTrafficDelayInSeconds)}, Length: ${_formatLength(lengthInMeters)}';
 
-    _showDialog('Route Details', '$routeDetails');
+    _showDialog('Route Details', routeDetails);
     logger.d(routeDetails);
   }
 
@@ -641,38 +578,29 @@ class _MapScreenState extends State<MapScreen> {
     final double longitude = locationData.longitude!;
 
     //File mapStyle = File("assets/map_styles/custom-dark-style-neon-rds.json");
-    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalNight,
-        (MapError? error) {
+    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalNight, (MapError? error) {
       // hereMapController.mapScene.loadSceneFromConfigurationFile(mapStyle.path, (MapError? error) {
       if (error != null) {
-        print('Map scene not loaded. MapError: ${error.toString()}');
+        logger.d('Map scene not loaded. MapError: ${error.toString()}');
         return;
       }
 
       const double distanceToEarthInMeters = 20000;
-      MapMeasure mapMeasureZoom =
-          MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
-      hereMapController.camera.lookAtPointWithMeasure(
-          GeoCoordinates(latitude, longitude), mapMeasureZoom);
-      hereMapController.mapScene.enableFeatures(
-          {MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
-      hereMapController.mapScene.enableFeatures(
-          {MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
+      MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, distanceToEarthInMeters);
+      hereMapController.camera.lookAtPointWithMeasure(GeoCoordinates(latitude, longitude), mapMeasureZoom);
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficFlow: MapFeatureModes.trafficFlowWithFreeFlow});
+      hereMapController.mapScene.enableFeatures({MapFeatures.trafficIncidents: MapFeatureModes.defaultMode});
     });
     myLoc();
     for (RiderModel rider in riders) {
-      addMarker(_hereMapController, rider.currentLatitude,
-          rider.currentLongitude, "assets/images/rider.png");
+      addMarker(_hereMapController, rider.currentLatitude, rider.currentLongitude, "assets/images/rider.png");
     }
     for (var order in orders) {
-      addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude,
-          "assets/images/food.png");
-      addMarker(_hereMapController, order.destinationLatitude,
-          order.destinationLongitude, "assets/images/ecoeatspin.png");
+      addMarker(_hereMapController, order.sourceLatitude, order.sourceLongitude, "assets/images/food.png");
+      addMarker(_hereMapController, order.destinationLatitude, order.destinationLongitude, "assets/images/ecoeatspin.png");
       // waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
       //     order.sourceLatitude, order.sourceLongitude)));
-      waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(
-          order.destinationLatitude, order.destinationLongitude)));
+      waypoints.add(rout.Waypoint.withDefaults(GeoCoordinates(order.destinationLatitude, order.destinationLongitude)));
     }
   }
 
@@ -684,18 +612,16 @@ class _MapScreenState extends State<MapScreen> {
       mylatit = locationData!.latitude!;
       mylongit = locationData.longitude!;
       // No last known location, use default instead.
-      myLocation = Location.withCoordinates(
-          GeoCoordinates(locationData!.latitude!, locationData.longitude!));
+      myLocation = Location.withCoordinates(GeoCoordinates(locationData.latitude!, locationData.longitude!));
       myLocation.time = DateTime.now();
     }
 
     // Set-up location indicator.
     // Enable a halo to indicate the horizontal accuracy.
-    _locationIndicator!.isAccuracyVisualized = true;
-    _locationIndicator!.locationIndicatorStyle =
-        LocationIndicatorIndicatorStyle.pedestrian;
-    _locationIndicator!.updateLocation(myLocation);
-    _locationIndicator!.enable(_hereMapController!);
+    _locationIndicator.isAccuracyVisualized = true;
+    _locationIndicator.locationIndicatorStyle = LocationIndicatorIndicatorStyle.pedestrian;
+    _locationIndicator.updateLocation(myLocation);
+    _locationIndicator.enable(_hereMapController);
 
     // MapMeasure mapMeasureZoom = MapMeasure(MapMeasureKind.distance, 2000);
     // _hereMapController!.camera.lookAtPointWithMeasure(
@@ -711,32 +637,27 @@ class _MapScreenState extends State<MapScreen> {
 
   List allMarkers = [];
 
-  void addMarker(HereMapController hereMapController, double lati, double longi,
-      String logo) {
+  void addMarker(HereMapController hereMapController, double lati, double longi, String logo) {
     logger.d("Add markers");
     int imageWidth = 100;
     int imageHeight = 100;
-    MapImage mapImage =
-        MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
+    MapImage mapImage = MapImage.withFilePathAndWidthAndHeight(logo, imageWidth, imageHeight);
     MapMarker mapMarker = MapMarker(GeoCoordinates(lati, longi), mapImage);
     allMarkers.add(mapMarker);
     _setTapGestureHandler();
     hereMapController.mapScene.addMapMarker(mapMarker);
   }
 
-  void animateMarker(MapMarker marker, GeoCoordinates targetCoordinates,
-      {required int durationMs}) {
+  void animateMarker(MapMarker marker, GeoCoordinates targetCoordinates, {required int durationMs}) {
     const stepDurationMs = 50;
     var steps = (durationMs / stepDurationMs).round();
 
-    var latDiff =
-        (targetCoordinates.latitude - marker.coordinates.latitude) / steps;
-    var lonDiff =
-        (targetCoordinates.longitude - marker.coordinates.longitude) / steps;
+    var latDiff = (targetCoordinates.latitude - marker.coordinates.latitude) / steps;
+    var lonDiff = (targetCoordinates.longitude - marker.coordinates.longitude) / steps;
 
     var currentStep = 0;
 
-    Timer.periodic(Duration(milliseconds: stepDurationMs), (timer) {
+    Timer.periodic(const Duration(milliseconds: stepDurationMs), (timer) {
       if (currentStep >= steps) {
         timer.cancel();
         return;
@@ -761,8 +682,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _pickMapMarker(Point2D touchPoint) {
     double radiusInPixel = 2;
-    _hereMapController.pickMapItems(touchPoint, radiusInPixel,
-        (pickMapItemsResult) {
+    _hereMapController.pickMapItems(touchPoint, radiusInPixel, (pickMapItemsResult) {
       if (pickMapItemsResult == null) {
         // Pick operation failed.
         return;
@@ -775,34 +695,26 @@ class _MapScreenState extends State<MapScreen> {
       List<MapMarker> mapMarkerList = pickMapItemsResult.markers;
       int listLength = mapMarkerList.length;
       if (listLength == 0) {
-        print("No map markers found.");
+        logger.d("No map markers found.");
         return;
       }
 
       MapMarker topmostMapMarker = mapMarkerList.first;
-      Metadata? metadata = topmostMapMarker.metadata;
       var coordinates = topmostMapMarker.coordinates;
       var selected;
       for (var order in orders) {
-        if (order.sourceLatitude == coordinates.latitude &&
-            order.sourceLongitude == coordinates.longitude) {
+        if (order.sourceLatitude == coordinates.latitude && order.sourceLongitude == coordinates.longitude) {
           selected = order;
           break;
         }
       }
-      _markerPopup(
-          selected.sourceName,
-          selected.name,
-          selected.imageUrl,
-          selected.quantity.toString(),
-          selected.price.toString(),
-          selected.status);
+      _markerPopup(selected.sourceName, selected.name, selected.imageUrl, selected.quantity.toString(), selected.price.toString(), selected.status);
     });
   }
 
-  Widget _createWidget(String label, Color backgroundColor) {
+  Widget createWidget(String label, Color backgroundColor) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(color: Colors.black),
@@ -810,10 +722,10 @@ class _MapScreenState extends State<MapScreen> {
       child: GestureDetector(
         child: Text(
           label,
-          style: TextStyle(fontSize: 20.0),
+          style: const TextStyle(fontSize: 20.0),
         ),
         onTap: () {
-          print("Tapped on " + label);
+          logger.d("Tapped on $label");
         },
       ),
     );

@@ -1,18 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:here_hackathon/utils/const.dart';
-import 'package:here_hackathon/utils/typography.dart';
+
+import '../../utils/typography.dart';
 
 class RestrauntWidget extends StatelessWidget {
-  RestrauntWidget(
-      {Key? key,
+  const RestrauntWidget(
+      {super.key,
       required this.name,
       required this.accessories,
       required this.imageUrl,
       required this.status,
-      required this.rating})
-      : super(key: key);
+      required this.rating});
 
   final String name;
   final String imageUrl;
@@ -28,7 +25,7 @@ class RestrauntWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
             child: Image.network(imageUrl),
             //"https://source.unsplash.com/random/400x200?sig=${Random().nextInt(100)}"),
           ),
@@ -51,30 +48,30 @@ class RestrauntWidget extends StatelessWidget {
           ),
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.star_border,
               ),
               Text(
                 rating,
                 style: Typo.bodyMedium,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
-              Icon(
+              const Icon(
                 Icons.fire_truck_outlined,
               ),
-              Text(
+              const Text(
                 "Free",
                 style: Typo.bodyMedium,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
-              Icon(
+              const Icon(
                 Icons.timelapse_sharp,
               ),
-              Text(
+              const Text(
                 "20 mins",
                 style: Typo.bodyMedium,
               ),
