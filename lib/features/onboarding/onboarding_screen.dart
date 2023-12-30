@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:here_hackathon/logic/stores/location_store.dart';
 import 'package:here_hackathon/logic/stores/order_store.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +12,7 @@ import '../../logic/stores/auth_store.dart';
 import '../../utils/const.dart';
 import '../../utils/routes/app_router.gr.dart';
 
+@RoutePage()
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
 
@@ -114,9 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                        "Sustainable and Eco-friendly delivery at your doorstep",
-                        style: GoogleFonts.lato()),
+                    Text("Sustainable and Eco-friendly delivery at your doorstep", style: GoogleFonts.lato()),
                   ],
                 ),
               ),
@@ -141,8 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text("Reduce your carbon footprint",
-                        style: GoogleFonts.lato()),
+                    Text("Reduce your carbon footprint", style: GoogleFonts.lato()),
                   ],
                 ),
               ),
@@ -169,11 +167,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 AnimatedSmoothIndicator(
                   activeIndex: currentPage.round(),
                   count: 3,
-                  effect: WormEffect(
-                      dotWidth: 10.0,
-                      dotHeight: 10.0,
-                      dotColor: Colors.grey,
-                      activeDotColor: Colors.indigo),
+                  effect: WormEffect(dotWidth: 10.0, dotHeight: 10.0, dotColor: Colors.grey, activeDotColor: Colors.indigo),
                 ),
                 Spacer(
                   flex: 5,
@@ -195,11 +189,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             : handleNavigation();
                       });
                     },
-                    child: currentPage != 3
-                        ? const Text('    Next',
-                            style: TextStyle(color: Colors.white))
-                        : Image.asset("assets/images/location.png",
-                            height: MediaQuery.of(context).size.width * 0.06)),
+                    child:
+                        currentPage != 3 ? const Text('    Next', style: TextStyle(color: Colors.white)) : Image.asset("assets/images/location.png", height: MediaQuery.of(context).size.width * 0.06)),
                 //SizedBox(height: 24)
               ],
             ),

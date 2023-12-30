@@ -4,10 +4,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:here_hackathon/features/map/map_screen.dart';
 
 import '../../utils/palette.dart';
-import '../bytes/byte_screen.dart';
-import '../edit_profile/fifth.dart';
+import '../edit_profile/profile_screen.dart';
 import '../feed/feed_screen.dart';
-import '../network/food_screen.dart';
+import '../foods/food_screen.dart';
 
 @RoutePage()
 class MainScaffoldScreen extends StatefulWidget {
@@ -36,7 +35,7 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
         children: const [
           FeedScreen(),
           FoodScreen(),
-          ByteScreen(),
+          // ByteScreen(),
           ProfileScreen(),
           MapScreen(),
         ],
@@ -77,32 +76,32 @@ class _MainScaffoldScreenState extends State<MainScaffoldScreen> {
             ),
             label: 'Food',
           ),
+          // BottomNavigationBarItem(
+          //   icon: SvgPicture.asset(
+          //     'assets/svgs/bytes.svg',
+          //     color: index == 2
+          //         ? Palette.primary
+          //         : MediaQuery.of(context).platformBrightness == Brightness.dark
+          //             ? Palette.grey
+          //             : Palette.black,
+          //   ),
+          //   label: 'Instamart',
+          // ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/svgs/bytes.svg',
+              'assets/svgs/stars.svg',
               color: index == 2
                   ? Palette.primary
                   : MediaQuery.of(context).platformBrightness == Brightness.dark
                       ? Palette.grey
                       : Palette.black,
             ),
-            label: 'Instamart',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/svgs/stars.svg',
-              color: index == 3
-                  ? Palette.primary
-                  : MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Palette.grey
-                      : Palette.black,
-            ),
-            label: 'Dineout',
+            label: 'Profile',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/svgs/dashboard.svg',
-              color: index == 4
+              color: index == 3
                   ? Palette.primary
                   : MediaQuery.of(context).platformBrightness == Brightness.dark
                       ? Palette.grey
