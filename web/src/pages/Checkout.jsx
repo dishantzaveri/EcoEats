@@ -54,7 +54,7 @@ const Checkout = () => {
   const { setDefaults, fromAddress } = require("react-geocode");
 
   setDefaults({
-    key: "AIzaSyAMn8HxTpw1qZDpqOAyNwIE5BoAKVKEFr0",
+    key: "INSERT_KEY_HERE",
     language: "en",
     region: "es",
   });
