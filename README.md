@@ -1,5 +1,25 @@
-# EcoEts
-Sustainable Food Delivery Optimization: Build a solution (Web/Mobile app) that optimizes food delivery routes for local restaurants using HERE Routing APIs/Mobile SDKs while minimizing environmental impact.
+# EcoEats - Sustainable Food Delivery
+
+EcoEats is an innovative solution aimed at optimizing food delivery routes for local restaurants while minimizing environmental impact. By integrating HERE Routing APIs/Mobile SDKs, EcoEats ensures that each delivery is not only quick but also eco-friendly.
+
+# Features
+
+- **Fast Delivery**: Experience the fastest delivery service with advanced GPS tracking.
+- **No Minimum Order**: Order as much or as little as you want without any restrictions.
+- **HERE API Integration**: Utilize HERE Routing APIs to optimize delivery routes efficiently.
+- **Environmental Impact**: Committed to reducing carbon footprints with every delivery.
+- **Local Partnerships**: Collaborating with local businesses to enhance service offerings.
+- **Analytics Dashboard**: Empowering product owners with data insights to broaden their reach.
+- **Flexible Subscription Model**: Various pricing tiers to fit customer needs and budgets.
+- **User Profile Management**: Personalized user experience with a comprehensive dashboard.
+
+# Tech Stack
+
+- React for the web application frontend.
+- Flutter for cross-platform mobile application development.
+- Node.js for the backend.
+- Amazon Web Services for hosting and database services.
+- HERE API for routing and geolocation services.
 
 # Implementation
 
